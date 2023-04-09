@@ -1,0 +1,13 @@
+<div class="content-wrapper">
+  <div class="dataset-list">
+    <mat-nav-list>
+      <div mat-subheader>Datasets</div>
+      <mat-list-item *ngFor="let dataset of datasets">
+        <button mat-stroked-button color="primary" routerLink="/datasets/{{dataset.name}}">
+          <mat-icon color="primary">folder</mat-icon>
+          {{dataset.name}}
+        </button>
+      </mat-list-item>
+    </mat-nav-list>
+  </div>
+</div>
