@@ -24,4 +24,8 @@ export class DatasetsComponent implements OnInit, AfterViewInit {
       .subscribe(result => this.datasets = result);
   }
 
+  getAvailableDatasets(): void {
+    this.datasetService.getAvailableDatasets()
+      .subscribe(result => console.log(result));
+  }
 }

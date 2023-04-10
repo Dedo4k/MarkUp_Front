@@ -15,4 +15,8 @@ export class DatasetService {
   getLoadedDatasets(): Observable<Dataset[]> {
     return this.http.get<Dataset[]>("/api/v2/datasets");
   }
+
+  getAvailableDatasets(): Observable<Dataset[]> {
+    return this.http.get<Dataset[]>("/api/v2/datasets/available");
+  }
 }
