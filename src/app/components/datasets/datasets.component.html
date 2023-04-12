@@ -1,14 +1,22 @@
 <div class="content-wrapper">
   <div class="dataset-list">
-    <mat-nav-list>
-      <div mat-subheader>Datasets</div>
-      <mat-list-item *ngFor="let dataset of datasets">
-        <button mat-stroked-button color="primary" routerLink="/datasets/{{dataset.name}}">
-          <mat-icon color="primary">folder</mat-icon>
-          {{dataset.name}}
-        </button>
-      </mat-list-item>
-    </mat-nav-list>
+    <mat-card>
+      <mat-card-header class="list-header">
+        <mat-card-title class="list-title">Datasets</mat-card-title>
+        <span class="list-header-spacer"></span>
+        <button mat-raised-button color="primary" class="list-header-btn">Load New</button>
+        <button mat-raised-button color="primary" class="list-header-btn">Load Existing</button>
+      </mat-card-header>
+      <mat-divider class="list-divider"></mat-divider>
+      <mat-card-content>
+        <div *ngFor="let dataset of datasets">
+          <button mat-flat-button routerLink="/datasets/{{dataset.name}}" class="list-btn">
+            <mat-icon color="primary">folder</mat-icon>
+            {{dataset.name}}
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 
   <button mat-button (click)="getAvailableDatasets()" color="primary">Available</button>

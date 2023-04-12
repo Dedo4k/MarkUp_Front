@@ -1,18 +1,29 @@
 <div class="header-wrapper">
   <mat-sidenav-container class="header">
     <mat-toolbar>
-      <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+      <button mat-icon-button>
         <mat-icon>menu</mat-icon>
       </button>
-      <span>My App</span>
+      <span>Mark Up</span>
       <button mat-button routerLink="/datasets" class="header-btn">Datasets</button>
+
       <span class="example-spacer"></span>
-      <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
-        <mat-icon>favorite</mat-icon>
+
+      <button *ngIf="!isAuthenticated" mat-button class="header-btn"
+              (click)="auth.openLoginDialog('/')">
+        <mat-icon>login</mat-icon>
+        Sign In
       </button>
-      <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
-        <mat-icon>share</mat-icon>
+      <button *ngIf="isAuthenticated" mat-button class="header-btn" [matMenuTriggerFor]="user_submenu">
+        <mat-icon>account_circle</mat-icon>
+        {{authenticatedUser.username}}
       </button>
+      <mat-menu #user_submenu>
+        <button mat-menu-item (click)="auth.handleLogoutRequest('/')">
+          <mat-icon>logout</mat-icon>
+          Logout
+        </button>
+      </mat-menu>
     </mat-toolbar>
   </mat-sidenav-container>
 </div>

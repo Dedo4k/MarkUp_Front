@@ -1,6 +1,8 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {DatasetService} from "../../services/dataset.service";
 import {Dataset} from "../../models/dataset";
+import {AuthService} from "../../services/auth.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-datasets',
@@ -11,8 +13,12 @@ export class DatasetsComponent implements OnInit, AfterViewInit {
 
   datasets: Dataset[] = [];
 
-  constructor(private datasetService: DatasetService) {
-
+  constructor(private datasetService: DatasetService,
+              private authService: AuthService,
+              private router: Router) {
+    if (!authService.isAuthenticated()) {
+      authService.openLoginDialog('/datasets');
+    }
   }
 
   ngOnInit(): void {
@@ -27,5 +33,9 @@ export class DatasetsComponent implements OnInit, AfterViewInit {
   getAvailableDatasets(): void {
     this.datasetService.getAvailableDatasets()
       .subscribe(result => console.log(result));
+  }
+
+  get auth(): AuthService {
+    return this.authService;
   }
 }

@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {Injectable, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -12,8 +12,28 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MarkupComponent} from './components/markup/markup.component';
 import {DatasetsComponent} from './components/datasets/datasets.component';
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule, HttpHandler, HttpInterceptor, HttpRequest} from "@angular/common/http";
 import {MatListModule} from "@angular/material/list";
+import {AuthService} from "./services/auth.service";
+import {MatDialogModule} from "@angular/material/dialog";
+import { LoginComponent } from './components/login/login.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import {MatInputModule} from "@angular/material/input";
+import {MatMenuModule} from "@angular/material/menu";
+import { DatasetDetailsComponent } from './components/datasets/dataset-details/dataset-details.component';
+import {MatCardModule} from "@angular/material/card";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+
+@Injectable()
+export class XhrInterceptor implements HttpInterceptor {
+
+  intercept(req: HttpRequest<any>, next: HttpHandler) {
+    const xhr = req.clone({
+      headers: req.headers.set('X-Requested-With', 'XMLHttpRequest')
+    });
+    return next.handle(xhr);
+  }
+}
 
 @NgModule({
   declarations: [
@@ -22,6 +42,8 @@ import {MatListModule} from "@angular/material/list";
     HeaderComponent,
     MarkupComponent,
     DatasetsComponent,
+    LoginComponent,
+    DatasetDetailsComponent,
   ],
   imports: [
     BrowserModule,
@@ -32,9 +54,15 @@ import {MatListModule} from "@angular/material/list";
     MatButtonModule,
     MatSidenavModule,
     HttpClientModule,
-    MatListModule
+    MatListModule,
+    MatDialogModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatMenuModule,
+    MatCardModule,
+    MatProgressBarModule
   ],
-  providers: [],
+  providers: [AuthService, {provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true}],
   bootstrap: [AppComponent]
 })
 export class AppModule {
