@@ -1,0 +1,34 @@
+<div class="row-wrapper max-height">
+  <mat-card class="file-list">
+    <mat-card-header>
+      <mat-card-title>
+        {{storage.datasetName}} ({{storage.cursor + 1}}/{{storage.names.length}})
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="file-list-content">
+      <div *ngIf="storage.downloading">
+        <mat-progress-bar mode="determinate"
+                          [value]="storage.dataset.length / storage.maxSize * 100"></mat-progress-bar>
+        {{storage.dataset.length}}/{{storage.maxSize}}
+      </div>
+      <mat-selection-list multiple="false" hideSingleSelectionIndicator="true">
+        <mat-list-option *ngFor="let name of storage.names"
+                         [selected]="name == storage.names[storage.cursor]">
+          <div matListItemTitle>{{name}}</div>
+        </mat-list-option>
+      </mat-selection-list>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="display-zone">
+    <mat-card-header>
+      <mat-card-title>File</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="display-card-content">
+      <div *ngIf="!storage.dataset.length" class="display-spinner">
+        <mat-spinner mode="indeterminate"></mat-spinner>
+      </div>
+      <div id="img-container">
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

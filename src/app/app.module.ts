@@ -23,6 +23,8 @@ import {MatMenuModule} from "@angular/material/menu";
 import { DatasetDetailsComponent } from './components/datasets/dataset-details/dataset-details.component';
 import {MatCardModule} from "@angular/material/card";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
+import { DisplayComponent } from './components/display/display.component';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @Injectable()
 export class XhrInterceptor implements HttpInterceptor {
@@ -44,24 +46,26 @@ export class XhrInterceptor implements HttpInterceptor {
     DatasetsComponent,
     LoginComponent,
     DatasetDetailsComponent,
+    DisplayComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatSidenavModule,
-    HttpClientModule,
-    MatListModule,
-    MatDialogModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatMenuModule,
-    MatCardModule,
-    MatProgressBarModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatButtonModule,
+        MatSidenavModule,
+        HttpClientModule,
+        MatListModule,
+        MatDialogModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatMenuModule,
+        MatCardModule,
+        MatProgressBarModule,
+        MatProgressSpinnerModule
+    ],
   providers: [AuthService, {provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true}],
   bootstrap: [AppComponent]
 })

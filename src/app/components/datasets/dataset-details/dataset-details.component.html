@@ -11,9 +11,8 @@
                               value="{{storage.dataset.length / storage.maxSize * 100}}"></mat-progress-bar>
             {{storage.dataset.length}}/{{storage.maxSize}}
           </div>
-          <mat-selection-list multiple="false" hideSingleSelectionIndicator="true">
-            <mat-list-option *ngFor="let data of storage.dataset"
-                             selected="{{data == storage.current()}}">
+          <mat-selection-list #matList multiple="false" hideSingleSelectionIndicator="true">
+            <mat-list-option *ngFor="let data of storage.dataset">
               <div matListItemTitle>{{data.dataName}}</div>
             </mat-list-option>
           </mat-selection-list>
@@ -21,16 +20,16 @@
       </mat-card>
     </div>
     <div class="file-display-wrapper">
-      <mat-card *ngIf="storage.current() != null">
+      <mat-card *ngIf="current() != null">
         <mat-card-header>
-          <mat-card-title>{{storage.current().datasetName}} / {{storage.current().dataName}}</mat-card-title>
+          <mat-card-title>{{current().datasetName}} / {{current().dataName}}</mat-card-title>
           <span class="header-spacer"></span>
-          <button mat-raised-button color="accent" (click)="storage.prev()">Prev</button>
-          <button mat-raised-button color="accent" (click)="storage.next()">Next</button>
+          <button mat-raised-button color="accent" (click)="prev()">Prev</button>
+          <button mat-raised-button color="accent" (click)="next()">Next</button>
         </mat-card-header>
         <mat-card-content>
-          <div class="img-wrapper">
-            <img src="data:image/jpeg;base64,{{storage.current().imageBytes}}" alt="">
+          <div id="img-container" class="img-wrapper">
+<!--            <img src="data:image/jpeg;base64,{{storage.current().imageBytes}}" alt="">-->
           </div>
         </mat-card-content>
       </mat-card>

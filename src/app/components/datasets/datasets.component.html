@@ -10,7 +10,7 @@
       <mat-divider class="list-divider"></mat-divider>
       <mat-card-content>
         <div *ngFor="let dataset of datasets">
-          <button mat-flat-button routerLink="/datasets/{{dataset.name}}" class="list-btn">
+          <button mat-flat-button routerLink="/display/{{dataset.name}}" class="list-btn">
             <mat-icon color="primary">folder</mat-icon>
             {{dataset.name}}
           </button>
