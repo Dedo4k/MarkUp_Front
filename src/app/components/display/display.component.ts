@@ -16,6 +16,12 @@ export class DisplayComponent implements OnInit {
   stage: Konva.Stage | undefined;
   imageLayer: Konva.Layer | undefined;
   layoutLayer: Konva.Layer | undefined;
+  layoutTransformer: Konva.Transformer | undefined;
+  x1: number | undefined;
+  x2: number | undefined;
+  y1: number | undefined;
+  y2: number | undefined;
+  drawingRect: Konva.Rect | undefined;
 
   constructor(public storage: DatasetStorageService,
               private route: ActivatedRoute) {
@@ -38,18 +44,70 @@ export class DisplayComponent implements OnInit {
     this.stage.add(this.imageLayer);
     this.stage.add(this.layoutLayer);
 
+    this.stage.on("mousedown touchstart", (e) => {
+
+      this.x1 = Number(this.stage?.getPointerPosition()?.x);
+      this.y1 = Number(this.stage?.getPointerPosition()?.y);
+      this.x2 = Number(this.x1);
+      this.y2 = Number(this.y1);
+
+      this.drawingRect = new Konva.Rect({
+        x: this.x1,
+        y: this.y1,
+        width: 0,
+        height: 0,
+        strokeWidth: 2,
+        stroke: "black"
+      });
+      console.log(this.drawingRect);
+      this.layoutLayer?.add(this.drawingRect);
+    });
+
+    this.stage.on("mousemove touchmove", (e) => {
+      this.x2 = this.stage?.getPointerPosition()?.x;
+      this.y2 = this.stage?.getPointerPosition()?.y;
+
+      this.drawingRect?.setAttrs({
+        x: Math.min(Number(this.x1), Number(this.x2)),
+        y: Math.min(Number(this.y1), Number(this.y2)),
+        width: Math.abs(Number(this.x1) - Number(this.x2)),
+        height: Math.abs(Number(this.y1) - Number(this.y2))
+      });
+    });
+
+    this.stage.on("mouseup touchend", (e) => {
+      let rect = new Konva.Rect({
+        x: this.drawingRect?.x(),
+        y: this.drawingRect?.y(),
+        width: this.drawingRect?.width(),
+        height: this.drawingRect?.height(),
+        stroke: "black",
+        strokeWidth: 2
+      });
+      this.layoutLayer?.add(rect);
+      this.drawingRect?.destroy();
+    });
+
+    this.stage.on("click tap", (e) => {
+      if (!e.target.hasName("rect")) {
+        return;
+      }
+
+
+    });
+
     new Promise((resolve, reject) => {
       setTimeout(() => {
         if (this.storage.dataset.length > 0) {
           resolve(this.storage.dataset.length);
         }
-      }, 500);
+      }, 1000);
     }).then((res) => {
-      this.displayFirstData()
+      this.displayCurrentData()
     })
   }
 
-  displayFirstData() {
+  displayCurrentData() {
     let image = new Image();
     image.onload = () => {
       let dataImage = new Konva.Image({
@@ -60,6 +118,7 @@ export class DisplayComponent implements OnInit {
         height: image.height
       });
       this.stage?.setSize({width: image.width, height: image.height});
+      this.imageLayer?.destroyChildren();
       this.imageLayer?.add(dataImage);
     }
     image.src = "data:image/jpeg;base64," + this.storage.current().imageBytes;
@@ -86,6 +145,8 @@ export class DisplayComponent implements OnInit {
       }
     }
 
+    this.layoutLayer?.destroyChildren();
+    console.log(layout);
     if (layout.object.constructor === Array) {
       layout.object.forEach(value => this.drawBndbox(value.bndbox));
     } else {
@@ -102,9 +163,24 @@ export class DisplayComponent implements OnInit {
       height: bndbox.ymax - bndbox.ymin,
       stroke: "black",
       strokeWidth: 2,
-      draggable: true
+      // draggable: true
     });
-    console.log(rect);
+
     this.layoutLayer?.add(rect);
+  }
+
+  prev() {
+    this.storage.prev();
+    this.displayCurrentData();
+  }
+
+  next() {
+    this.storage.next();
+    this.displayCurrentData();
+  }
+
+  clear() {
+    this.imageLayer?.destroyChildren();
+    this.layoutLayer?.destroyChildren();
   }
 }

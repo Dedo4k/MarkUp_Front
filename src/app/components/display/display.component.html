@@ -21,7 +21,11 @@
   </mat-card>
   <mat-card class="display-zone">
     <mat-card-header>
-      <mat-card-title>File</mat-card-title>
+      <mat-card-title>File: {{storage.current()?.imageName}}</mat-card-title>
+      <span class="display-toolbar-spacer"></span>
+      <button mat-raised-button color="primary" (click)="prev()">Prev</button>
+      <button mat-raised-button color="primary" (click)="next()">Next</button>
+      <button mat-raised-button color="primary" (click)="clear()">Clear</button>
     </mat-card-header>
     <mat-card-content class="display-card-content">
       <div *ngIf="!storage.dataset.length" class="display-spinner">
