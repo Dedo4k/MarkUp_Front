@@ -2,6 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import Konva from "konva";
 import {DatasetStorageService} from "../../services/dataset-storage.service";
 import {ActivatedRoute} from "@angular/router";
+import {Annotation, Bndbox} from "../../models/layout/annotation";
+import {parseString} from "xml2js";
+import {parseBooleans, parseNumbers} from "xml2js/lib/processors";
 
 @Component({
   selector: 'app-display',
@@ -60,5 +63,48 @@ export class DisplayComponent implements OnInit {
       this.imageLayer?.add(dataImage);
     }
     image.src = "data:image/jpeg;base64," + this.storage.current().imageBytes;
+
+    let layout = {} as Annotation;
+    switch (this.storage.current().layoutType) {
+      case "xml": {
+        let json: any;
+        parseString(this.storage.current().layout, {
+          explicitArray: false, mergeAttrs: true, valueProcessors: [
+            parseNumbers,
+            parseBooleans
+          ]
+        }, (err, result) => {
+          json = result;
+        });
+
+        layout = json.annotation as Annotation;
+        break;
+      }
+      case "json": {
+
+        break;
+      }
+    }
+
+    if (layout.object.constructor === Array) {
+      layout.object.forEach(value => this.drawBndbox(value.bndbox));
+    } else {
+      // @ts-ignore
+      this.drawBndbox(layout.object.bndbox);
+    }
+  }
+
+  drawBndbox(bndbox: Bndbox) {
+    let rect = new Konva.Rect({
+      x: bndbox.xmin,
+      y: bndbox.ymin,
+      width: bndbox.xmax - bndbox.xmin,
+      height: bndbox.ymax - bndbox.ymin,
+      stroke: "black",
+      strokeWidth: 2,
+      draggable: true
+    });
+    console.log(rect);
+    this.layoutLayer?.add(rect);
   }
 }
