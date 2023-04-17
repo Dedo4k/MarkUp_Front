@@ -6,6 +6,18 @@ export interface Annotation {
   size: Size;
   segmented: number;
   object: Object | Object[];
+  checked: string;
+}
+
+export interface Layout {
+  folder: string;
+  filename: string;
+  path: string;
+  source: Source;
+  size: Size;
+  segmented: number;
+  object: Object[];
+  checked: string;
 }
 
 export interface Object {
