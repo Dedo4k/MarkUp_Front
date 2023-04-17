@@ -1,7 +1,6 @@
-import {ChangeDetectorRef, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Data} from "../models/data";
 import {DatasetService} from "./dataset.service";
-import {delay, timeout} from "rxjs";
 
 enum Shift {
   None,
@@ -17,6 +16,7 @@ export class DatasetStorageService {
   datasetName = "";
   dataset: Data[] = [];
   names: string[] = [];
+  colors = new Map([["default", "black"]]);
   maxSize = 20;
   cursor = 0;
   downloading = false;
@@ -59,7 +59,9 @@ export class DatasetStorageService {
   }
 
   current() {
-    return this.dataset[this.cursor > this.maxSize / 2 ? this.maxSize / 2 : this.cursor];
+    let i = this.cursor > this.maxSize / 2 ? this.maxSize / 2 : this.cursor;
+    console.log(i);
+    return this.dataset[i];
   }
 
   next() {
@@ -78,5 +80,26 @@ export class DatasetStorageService {
     if (this.cursor >= this.maxSize / 2) {
       this.fillDatasetBuffer(Shift.Left);
     }
+  }
+
+  getLabels() {
+    return Array.from(new Set(this.current().layout.object.map(obj => obj.name)));
+  }
+
+  getColor(label: string) {
+    if (!this.colors.has(label)) {
+      let color = Math.floor(Math.random() * 16777216).toString(16);
+      while (color.length < 6) {
+        color = 0 + color;
+      }
+      this.colors.set(label, "#" + color);
+    }
+    return this.colors.get(label);
+  }
+
+  updateData(data: Data) {
+    this.datasetService.updateData(data).subscribe(result => {
+      console.log(result);
+    });
   }
 }

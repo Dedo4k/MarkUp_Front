@@ -6,7 +6,9 @@ export interface Annotation {
   size: Size;
   segmented: number;
   object: Object | Object[];
-  checked: string;
+  $: {
+    verified: string;
+  }
 }
 
 export interface Layout {
@@ -17,7 +19,9 @@ export interface Layout {
   size: Size;
   segmented: number;
   object: Object[];
-  checked: string;
+  $: {
+    verified: string;
+  }
 }
 
 export interface Object {

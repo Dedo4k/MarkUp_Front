@@ -25,6 +25,7 @@ import {MatCardModule} from "@angular/material/card";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import { DisplayComponent } from './components/display/display.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import { LabelSelectComponent } from './components/display/label-select/label-select.component';
 
 @Injectable()
 export class XhrInterceptor implements HttpInterceptor {
@@ -47,6 +48,7 @@ export class XhrInterceptor implements HttpInterceptor {
     LoginComponent,
     DatasetDetailsComponent,
     DisplayComponent,
+    LabelSelectComponent,
   ],
     imports: [
         BrowserModule,

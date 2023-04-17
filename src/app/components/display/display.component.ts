@@ -3,6 +3,8 @@ import Konva from "konva";
 import {DatasetStorageService} from "../../services/dataset-storage.service";
 import {ActivatedRoute} from "@angular/router";
 import {Bndbox, Object} from "../../models/layout/annotation";
+import {MatDialog} from "@angular/material/dialog";
+import {LabelSelectComponent} from "./label-select/label-select.component";
 
 @Component({
   selector: 'app-display',
@@ -20,9 +22,11 @@ export class DisplayComponent implements OnInit {
   y1: number | undefined;
   y2: number | undefined;
   drawingRect: Konva.Rect | undefined;
+  changes = false;
 
   constructor(public storage: DatasetStorageService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private dialog: MatDialog) {
     route.paramMap.subscribe(params => {
       let name = params.get("name");
       if (name != null) {
@@ -89,12 +93,21 @@ export class DisplayComponent implements OnInit {
         stroke: "black",
         strokeWidth: 2
       });
-      this.drawingRect?.destroy();
       if (rect.height() != 0 && rect.width() != 0) {
-        this.layoutLayer?.add(rect);
-        let obj = this.buildObject(rect);
-        this.storage.current().layout.object.push(obj);
+        this.openLabelDialog(this.storage.getLabels()).afterClosed().subscribe(result => {
+          if (result?.label.length){
+            let label = result.label instanceof Array ? result.label[0] : result.label;
+            rect.setAttr("stroke", this.storage.getColor(label));
+            this.layoutLayer?.add(rect);
+            let obj = this.buildObject(rect, label);
+            this.storage.current().layout.object.push(obj);
+            this.changes = true;
+          } else {
+            this.drawingRect?.destroy();
+          }
+        });
       }
+      this.drawingRect?.destroy();
     });
 
     this.stage.on("click tap", (e) => {
@@ -113,6 +126,12 @@ export class DisplayComponent implements OnInit {
       this.layoutTransformer = new Konva.Transformer();
       this.layoutLayer?.add(this.layoutTransformer);
       e.target.setDraggable(true);
+      e.target.on("dragstart", (e) => {
+        this.changes = true;
+      });
+      e.target.on("transformstart", (e) => {
+        this.changes = true;
+      })
       this.layoutTransformer.nodes([e.target]);
     });
 
@@ -130,6 +149,7 @@ export class DisplayComponent implements OnInit {
                 && value.bndbox.xmax !== layout.x() + layout.width()
                 && value.bndbox.ymax !== layout.y() + layout.height());
             layout.destroy();
+            this.changes = true;
           });
           this.layoutTransformer?.destroy();
         }
@@ -149,9 +169,8 @@ export class DisplayComponent implements OnInit {
 
   displayCurrentData() {
     this.stage?.container().focus();
+    this.changes = false;
 
-    let data = this.storage.current();
-    console.log(data);
     let image = new Image();
     image.onload = () => {
       let dataImage = new Konva.Image({
@@ -165,28 +184,28 @@ export class DisplayComponent implements OnInit {
       this.imageLayer?.destroyChildren();
       this.imageLayer?.add(dataImage);
     }
-    image.src = "data:image/jpeg;base64," + data.imageBytes;
+    image.src = "data:image/jpeg;base64," + this.storage.current().imageBytes;
 
     this.layoutLayer?.destroyChildren();
-    data.layout.object.forEach(value => this.drawBndbox(value.bndbox));
+    this.storage.current().layout.object.forEach(value => this.drawBndbox(value.bndbox, value.name));
   }
 
-  drawBndbox(bndbox: Bndbox) {
+  drawBndbox(bndbox: Bndbox, label: string) {
     let rect = new Konva.Rect({
       x: bndbox.xmin,
       y: bndbox.ymin,
       width: bndbox.xmax - bndbox.xmin,
       height: bndbox.ymax - bndbox.ymin,
-      stroke: "black",
+      stroke: this.storage.getColor(label),
       strokeWidth: 2
     });
 
     this.layoutLayer?.add(rect);
   }
 
-  buildObject(rect: Konva.Rect) {
+  buildObject(rect: Konva.Rect, label: string) {
     return {
-      name: "default",
+      name: label,
       bndbox: {
         xmin: Math.round(rect.x()),
         ymin: Math.round(rect.y()),
@@ -200,11 +219,17 @@ export class DisplayComponent implements OnInit {
   }
 
   prev() {
+    if (this.changes) {
+      this.storage.updateData(this.storage.current());
+    }
     this.storage.prev();
     this.displayCurrentData();
   }
 
   next() {
+    if (this.changes) {
+      this.storage.updateData(this.storage.current());
+    }
     this.storage.next();
     this.displayCurrentData();
   }
@@ -212,5 +237,9 @@ export class DisplayComponent implements OnInit {
   clear() {
     this.imageLayer?.destroyChildren();
     this.layoutLayer?.destroyChildren();
+  }
+
+  openLabelDialog(labels: string[]) {
+    return this.dialog.open(LabelSelectComponent, {data: labels});
   }
 }

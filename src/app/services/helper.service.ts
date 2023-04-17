@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {Annotation} from "../models/layout/annotation";
-import {parseString} from "xml2js";
+import {Annotation, Layout} from "../models/layout/annotation";
+import {Builder, parseString} from "xml2js";
 import {parseBooleans, parseNumbers} from "xml2js/lib/processors";
 
 @Injectable({
@@ -8,7 +8,8 @@ import {parseBooleans, parseNumbers} from "xml2js/lib/processors";
 })
 export class HelperService {
 
-  constructor() { }
+  constructor() {
+  }
 
   isEmpty(object: Object): boolean {
     return Object.values(object).every(x => x === null);
@@ -24,7 +25,7 @@ export class HelperService {
       case "xml": {
         let json: any;
         parseString(layout, {
-          explicitArray: false, mergeAttrs: true, valueProcessors: [
+          explicitArray: false, valueProcessors: [
             parseNumbers,
             parseBooleans
           ]
@@ -41,5 +42,9 @@ export class HelperService {
       }
     }
     return annotation;
+  }
+
+  buildXml(layout: Layout) {
+    return new Builder({rootName: "annotation"}).buildObject(layout);
   }
 }

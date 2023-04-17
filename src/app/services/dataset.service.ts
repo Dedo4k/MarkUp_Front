@@ -49,4 +49,15 @@ export class DatasetService {
         }
       ));
   }
+
+  updateData(data: Data): Observable<Data> {
+    let buildFile = this.helper.buildXml(data.layout);
+    let blob = new Blob([buildFile], {type: "text/xml"});
+    let file = new File([blob], data.layoutName);
+    let formData = new FormData();
+    formData.append("file", file);
+
+    return this.http.post<Data>(this.apiUrl + "/" + data.datasetName + "/" + data.dataName, formData,
+      this.authService.options);
+  }
 }

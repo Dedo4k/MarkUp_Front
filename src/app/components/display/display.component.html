@@ -26,8 +26,9 @@
       </mat-card-header>
       <mat-card-content class="label-list-content">
         <mat-selection-list multiple="false" hideSingleSelectionIndicator="true">
-          <mat-list-option *ngFor="let object of storage.current()?.layout?.object">
-            <div matListItemTitle>{{object.name}}</div>
+          <mat-list-option *ngFor="let object of storage.current()?.layout?.object" selected="false"
+                           [style.background-color]="storage.getColor(object.name)" class="label-list-option">
+            {{object.name}}
           </mat-list-option>
         </mat-selection-list>
       </mat-card-content>
