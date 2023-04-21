@@ -37,11 +37,13 @@ export class DatasetStorageService {
   }
 
   private fillDatasetBuffer(shift: Shift) {
+    console.log(this.dataset, this.cursor);
     if (this.dataset.length <= this.maxSize) {
       this.downloading = true;
       this.datasetService.getDataFromDataset(this.datasetName, this.names[this.dataset.length]).subscribe(res => {
         this.downloading = false;
         this.dataset.push(res);
+        // TODO add here fraw function
         this.fillDatasetBuffer(Shift.None);
       });
     } else {
@@ -49,27 +51,29 @@ export class DatasetStorageService {
       this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor + (shift == Shift.Left ? -this.maxSize / 2 : shift == Shift.Right ? this.maxSize / 2 : 0)]).subscribe(res => {
         this.downloading = false;
         if (shift == Shift.Right) {
-          this.dataset.shift();
           this.dataset.push(res);
+          this.dataset.shift();
         } else if (shift == Shift.Left) {
           this.dataset.unshift(res);
+          this.dataset.pop();
         }
       });
     }
   }
 
   current() {
-    let i = this.cursor > this.maxSize / 2 ? this.maxSize / 2 : this.cursor;
-    console.log(i);
-    return this.dataset[i];
+    let number = this.cursor > this.maxSize / 2 ? this.maxSize / 2 : this.cursor;
+    console.log(number, this.dataset);
+    return this.dataset[number];
   }
 
   next() {
+    //TODO попробовать сначала загрузить новый файл а потом только сдвишать указатель
     if (this.cursor < this.names.length) {
       this.cursor++;
     }
     if (this.cursor > this.maxSize / 2) {
-      this.fillDatasetBuffer(Shift.Right);
+      setTimeout(() => this.fillDatasetBuffer(Shift.Right));
     }
   }
 
@@ -78,7 +82,7 @@ export class DatasetStorageService {
       this.cursor--;
     }
     if (this.cursor >= this.maxSize / 2) {
-      this.fillDatasetBuffer(Shift.Left);
+      setTimeout(() => this.fillDatasetBuffer(Shift.Left));
     }
   }
 

@@ -24,10 +24,6 @@ export class DatasetService {
     return this.http.get<Dataset[]>(this.apiUrl, this.authService.options);
   }
 
-  getAvailableDatasets(): Observable<Dataset[]> {
-    return this.http.get<Dataset[]>(this.apiUrl + "/available", this.authService.options);
-  }
-
   getDatasetNames(datasetName: string): Observable<string[]> {
     return this.http.get<string[]>(this.apiUrl + "/" + datasetName + "/names", this.authService.options);
   }

@@ -234,11 +234,6 @@ export class DisplayComponent implements OnInit {
     this.displayCurrentData();
   }
 
-  clear() {
-    this.imageLayer?.destroyChildren();
-    this.layoutLayer?.destroyChildren();
-  }
-
   openLabelDialog(labels: string[]) {
     return this.dialog.open(LabelSelectComponent, {data: labels});
   }

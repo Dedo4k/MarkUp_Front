@@ -18,10 +18,6 @@ export class LabelSelectComponent {
     });
   }
 
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-
   onSubmit(label: string): void {
     this.dialogRef.close(label);
   }
