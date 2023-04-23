@@ -53,7 +53,7 @@ export class DatasetDetailsComponent implements AfterViewInit {
       let name = params.get("name");
       if (name != null) {
         this.name = name;
-        this.storage.downloadDataset(this.name);
+        this.storage.downloadDataset(this.name, undefined);
       }
     });
   }
@@ -69,7 +69,7 @@ export class DatasetDetailsComponent implements AfterViewInit {
   }
 
   next() {
-    this.storage.next();
+    this.storage.next(undefined);
     let rect = new Konva.Rect({
       x: 20,
       y: 20,
@@ -107,6 +107,6 @@ export class DatasetDetailsComponent implements AfterViewInit {
   }
 
   prev() {
-    this.storage.prev();
+    this.storage.prev(undefined);
   }
 }

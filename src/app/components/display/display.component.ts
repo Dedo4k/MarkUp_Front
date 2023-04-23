@@ -5,6 +5,8 @@ import {ActivatedRoute} from "@angular/router";
 import {Bndbox, Object} from "../../models/layout/annotation";
 import {MatDialog} from "@angular/material/dialog";
 import {LabelSelectComponent} from "./label-select/label-select.component";
+import {DatasetStorageV2Service} from "../../services/dataset-storage-v2.service";
+import {Data} from "../../models/data";
 
 @Component({
   selector: 'app-display',
@@ -26,11 +28,20 @@ export class DisplayComponent implements OnInit {
 
   constructor(public storage: DatasetStorageService,
               private route: ActivatedRoute,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              public st: DatasetStorageV2Service) {
     route.paramMap.subscribe(params => {
       let name = params.get("name");
       if (name != null) {
-        storage.downloadDataset(name);
+
+        storage.downloadDataset(name, undefined);
+        // st.downloadDataset(name)
+        // .subscribe(result => {
+        //   while(result.length <= 0) {
+        //     console.log("wait");
+        //   }
+        //   console.log("draw");
+        // })
       }
     })
   }
@@ -95,7 +106,7 @@ export class DisplayComponent implements OnInit {
       });
       if (rect.height() != 0 && rect.width() != 0) {
         this.openLabelDialog(this.storage.getLabels()).afterClosed().subscribe(result => {
-          if (result?.label.length){
+          if (result?.label.length) {
             let label = result.label instanceof Array ? result.label[0] : result.label;
             rect.setAttr("stroke", this.storage.getColor(label));
             this.layoutLayer?.add(rect);
@@ -222,16 +233,16 @@ export class DisplayComponent implements OnInit {
     if (this.changes) {
       this.storage.updateData(this.storage.current());
     }
-    this.storage.prev();
-    this.displayCurrentData();
+    this.storage.prev(() => this.displayCurrentData());
+    // this.displayCurrentData();
   }
 
   next() {
     if (this.changes) {
       this.storage.updateData(this.storage.current());
     }
-    this.storage.next();
-    this.displayCurrentData();
+    this.storage.next(() => this.displayCurrentData());
+    // this.displayCurrentData();
   }
 
   openLabelDialog(labels: string[]) {

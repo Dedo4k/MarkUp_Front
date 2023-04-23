@@ -24,27 +24,29 @@ export class DatasetStorageService {
   constructor(private datasetService: DatasetService) {
   }
 
-  downloadDataset(datasetName: string) {
+  downloadDataset(datasetName: string, callback: Function | undefined) {
     this.dataset = [];
     this.names = [];
     this.datasetName = datasetName;
+    this.cursor = 0;
 
     this.datasetService.getDatasetNames(datasetName)
       .subscribe(result => {
         this.names = result;
-        this.fillDatasetBuffer(Shift.None)
+        this.fillDatasetBuffer(Shift.None, callback);
       });
   }
 
-  private fillDatasetBuffer(shift: Shift) {
-    console.log(this.dataset, this.cursor);
+  private fillDatasetBuffer(shift: Shift, callback: Function | undefined) {
     if (this.dataset.length <= this.maxSize) {
       this.downloading = true;
       this.datasetService.getDataFromDataset(this.datasetName, this.names[this.dataset.length]).subscribe(res => {
         this.downloading = false;
         this.dataset.push(res);
-        // TODO add here fraw function
-        this.fillDatasetBuffer(Shift.None);
+        if (callback) {
+          callback();
+        }
+        this.fillDatasetBuffer(Shift.None, undefined);
       });
     } else {
       this.downloading = true;
@@ -57,32 +59,43 @@ export class DatasetStorageService {
           this.dataset.unshift(res);
           this.dataset.pop();
         }
+        if (callback) {
+          callback();
+        }
       });
     }
   }
 
   current() {
     let number = this.cursor > this.maxSize / 2 ? this.maxSize / 2 : this.cursor;
-    console.log(number, this.dataset);
+    // console.log(number, this.dataset);
     return this.dataset[number];
   }
 
-  next() {
+  next(callback: Function | undefined) {
     //TODO попробовать сначала загрузить новый файл а потом только сдвишать указатель
     if (this.cursor < this.names.length) {
       this.cursor++;
     }
     if (this.cursor > this.maxSize / 2) {
-      setTimeout(() => this.fillDatasetBuffer(Shift.Right));
+      this.fillDatasetBuffer(Shift.Right, callback);
+    } else {
+      if (callback) {
+        callback();
+      }
     }
   }
 
-  prev() {
+  prev(callback: Function | undefined) {
     if (0 < this.cursor) {
       this.cursor--;
     }
     if (this.cursor >= this.maxSize / 2) {
-      setTimeout(() => this.fillDatasetBuffer(Shift.Left));
+      this.fillDatasetBuffer(Shift.Left, callback);
+    } else {
+      if (callback) {
+        callback();
+      }
     }
   }
 
@@ -103,7 +116,7 @@ export class DatasetStorageService {
 
   updateData(data: Data) {
     this.datasetService.updateData(data).subscribe(result => {
-      console.log(result);
+      // console.log(result);
     });
   }
 }
