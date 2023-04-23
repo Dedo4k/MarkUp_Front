@@ -19,6 +19,7 @@ export class DatasetStorageService {
   colors = new Map([["default", "black"]]);
   maxSize = 20;
   cursor = 0;
+  bufferCursor = 0;
   downloading = false;
 
   constructor(private datasetService: DatasetService) {
@@ -29,6 +30,7 @@ export class DatasetStorageService {
     this.names = [];
     this.datasetName = datasetName;
     this.cursor = 0;
+    this.bufferCursor = 0;
 
     this.datasetService.getDatasetNames(datasetName)
       .subscribe(result => {
@@ -55,21 +57,21 @@ export class DatasetStorageService {
         if (shift == Shift.Right) {
           this.dataset.push(res);
           this.dataset.shift();
+          this.bufferCursor--;
         } else if (shift == Shift.Left) {
           this.dataset.unshift(res);
+          this.bufferCursor++;
           this.dataset.pop();
         }
-        if (callback) {
-          callback();
-        }
       });
+      if (callback) {
+        callback();
+      }
     }
   }
 
   current() {
-    let number = this.cursor > this.maxSize / 2 ? this.maxSize / 2 : this.cursor;
-    // console.log(number, this.dataset);
-    return this.dataset[number];
+    return this.dataset[this.bufferCursor];
   }
 
   next(callback: Function | undefined) {
@@ -77,7 +79,10 @@ export class DatasetStorageService {
     if (this.cursor < this.names.length) {
       this.cursor++;
     }
-    if (this.cursor > this.maxSize / 2) {
+    if (this.bufferCursor < this.maxSize) {
+      this.bufferCursor++;
+    }
+    if (this.bufferCursor > this.maxSize / 2) {
       this.fillDatasetBuffer(Shift.Right, callback);
     } else {
       if (callback) {
@@ -89,6 +94,9 @@ export class DatasetStorageService {
   prev(callback: Function | undefined) {
     if (0 < this.cursor) {
       this.cursor--;
+    }
+    if (0 < this.bufferCursor) {
+      this.bufferCursor--;
     }
     if (this.cursor >= this.maxSize / 2) {
       this.fillDatasetBuffer(Shift.Left, callback);

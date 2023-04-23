@@ -41,6 +41,9 @@ export class HelperService {
         break;
       }
     }
+    if (!annotation.object){
+      annotation.object = [];
+    }
     return annotation;
   }
 

@@ -6,7 +6,6 @@ import {Bndbox, Object} from "../../models/layout/annotation";
 import {MatDialog} from "@angular/material/dialog";
 import {LabelSelectComponent} from "./label-select/label-select.component";
 import {DatasetStorageV2Service} from "../../services/dataset-storage-v2.service";
-import {Data} from "../../models/data";
 
 @Component({
   selector: 'app-display',
