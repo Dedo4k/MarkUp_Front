@@ -5,7 +5,7 @@ $dark-theme: mat.define-dark-theme((color: (primary: mat.define-palette(mat.$blu
 
 $light-theme: mat.define-light-theme((color: (primary: mat.define-palette(mat.$cyan-palette),accent: mat.define-palette(mat.$blue-palette),),))
 
-@include mat.all-component-themes($dark-theme)
+@include mat.all-component-themes($light-theme)
 
 @media (prefers-color-scheme: light)
   @include mat.all-component-colors($light-theme)
@@ -16,3 +16,21 @@ html, body
 body
   margin: 0
   font-family: Roboto, "Helvetica Neue", sans-serif
+
+.content-wrapper
+  padding: 10px
+  max-width: 1600px
+  width: 100%
+  min-height: 810px
+  background-color: aliceblue
+  margin: 0 auto
+
+.row-wrapper
+  display: flex
+  flex-direction: row
+  justify-content: space-between
+
+.col-wrapper
+  display: flex
+  flex-direction: column
+  width: 100%

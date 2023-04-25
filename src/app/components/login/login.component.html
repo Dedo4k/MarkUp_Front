@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>Sign In</h1>
+<div mat-dialog-content>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit(loginForm.value)">
+    <mat-form-field>
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" placeholder="Username">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="password" placeholder="Password">
+    </mat-form-field>
+
+    <div>
+      <button type="button" mat-button (click)="onNoClick()">Cancel</button>
+      <button type="submit" mat-button [disabled]="loginForm.invalid" color="accent">Sign In</button>
+    </div>
+  </form>
+</div>

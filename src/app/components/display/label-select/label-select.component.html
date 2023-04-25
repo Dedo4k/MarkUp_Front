@@ -1,0 +1,18 @@
+<h1 matDialogTitle>Select Label</h1>
+<div matDialogContent>
+  <form [formGroup]="selectForm" (ngSubmit)="onSubmit(selectForm.value)">
+    <mat-form-field>
+      <mat-label>Label</mat-label>
+      <input matInput formControlName="label" placeholder="Label">
+    </mat-form-field>
+    <mat-selection-list multiple="false" hideSingleSelectionIndicator="true" formControlName="label">
+      <mat-list-option *ngFor="let label of data" [value]="label">
+        <div matListItemTitle>{{label}}</div>
+      </mat-list-option>
+    </mat-selection-list>
+
+    <div>
+      <button type="submit" mat-button [disabled]="selectForm.invalid">Select</button>
+    </div>
+  </form>
+</div>
