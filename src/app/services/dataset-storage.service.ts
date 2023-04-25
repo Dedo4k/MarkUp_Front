@@ -41,7 +41,12 @@ export class DatasetStorageService {
   }
 
   private fillDatasetBuffer(bufferPosition: number, callback: Function | undefined) {
+    // console.log("============")
+    // this.dataset.forEach(value => console.log(value.dataName));
+    // console.log("============")
+
     console.log(this.dataset);
+
     // if (this.dataset.length <= this.maxSize) {
     //   this.downloading = true;
     //   this.datasetService.getDataFromDataset(this.datasetName, this.names[this.dataset.length]).subscribe(res => {
@@ -124,92 +129,153 @@ export class DatasetStorageService {
     //
     // }
 
+    // if (this.downloadingReset) {
+    //   return;
+    // }
+    //
+    // if (bufferPosition !== this.cursor) {
+    //   this.cursor = bufferPosition;
+    //   this.bufferCursor = 0;
+    //   this.dataset = [];
+    // }
+    //
+    // if (this.cursor < this.maxSize / 2) {
+    //   if (this.dataset.length - this.bufferCursor < this.maxSize - this.cursor) {
+    //     this.downloading = true;
+    //     this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor + this.dataset.length])
+    //       .subscribe(res => {
+    //         this.downloading = false;
+    //         this.dataset.push(res);
+    //         if (callback) {
+    //           callback();
+    //         }
+    //         this.fillDatasetBuffer(bufferPosition, undefined);
+    //       })
+    //   } else if (this.bufferCursor < this.cursor) {
+    //     this.downloading = true;
+    //     this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor - this.bufferCursor - 1])
+    //       .subscribe(res => {
+    //         this.downloading = false;
+    //         this.dataset.unshift(res);
+    //         this.bufferCursor++;
+    //         if (callback) {
+    //           callback();
+    //         }
+    //         this.fillDatasetBuffer(bufferPosition, undefined);
+    //       })
+    //   }
+    // } else if (this.cursor >= this.names.length - this.maxSize / 2) {
+    //   if (this.dataset.length - this.bufferCursor < this.names.length - this.cursor) {
+    //     this.downloading = true;
+    //     this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor + this.dataset.length])
+    //       .subscribe(res => {
+    //         this.downloading = false;
+    //         this.dataset.push(res);
+    //         if (callback) {
+    //           callback();
+    //         }
+    //         this.fillDatasetBuffer(bufferPosition, undefined);
+    //       })
+    //   } else if (this.bufferCursor < this.maxSize - this.names.length + this.cursor) {
+    //     this.downloading = true;
+    //     this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor - this.bufferCursor - 1])
+    //       .subscribe(res => {
+    //         this.downloading = false;
+    //         this.dataset.unshift(res);
+    //         this.bufferCursor++;
+    //         if (callback) {
+    //           callback();
+    //         }
+    //         this.fillDatasetBuffer(bufferPosition, undefined);
+    //       })
+    //   }
+    // } else {
+    //   if (this.dataset.length - this.bufferCursor < this.maxSize / 2) {
+    //     this.downloading = true;
+    //     this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor + this.dataset.length])
+    //       .subscribe(res => {
+    //         this.downloading = false;
+    //         this.dataset.push(res);
+    //         if (callback) {
+    //           callback();
+    //         }
+    //         this.fillDatasetBuffer(bufferPosition, undefined);
+    //       })
+    //   } else if (this.bufferCursor < this.maxSize / 2) {
+    //     this.downloading = true;
+    //     this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor - this.bufferCursor - 1])
+    //       .subscribe(res => {
+    //         this.downloading = false;
+    //         this.dataset.unshift(res);
+    //         this.bufferCursor++;
+    //         if (callback) {
+    //           callback();
+    //         }
+    //         this.fillDatasetBuffer(bufferPosition, undefined);
+    //       })
+    //   }
+    // }
+
     if (this.downloadingReset) {
+      this.downloadingReset = false;
       return;
     }
 
-    if (bufferPosition !== this.cursor) {
-      this.cursor = bufferPosition;
-      this.bufferCursor = 0;
+    if (bufferPosition == this.cursor && this.dataset.length > 0) {
+      if (this.cursor < this.maxSize / 2) {
+        if (this.dataset.length - this.bufferCursor < this.maxSize - this.cursor) {
+          this.downloadAndAddRight();
+        } else if (this.bufferCursor < this.cursor) {
+          this.downloadAndAddLeft();
+        }
+      } else if (this.cursor >= this.names.length - this.maxSize / 2) {
+        if (this.dataset.length - this.bufferCursor < this.names.length - this.cursor) {
+          this.downloadAndAddRight();
+        } else if (this.bufferCursor < this.maxSize - this.names.length + this.cursor) {
+          this.downloadAndAddLeft();
+        }
+      } else {
+        if (this.dataset.length - this.bufferCursor < this.maxSize / 2) {
+          this.downloadAndAddRight();
+        } else if (this.bufferCursor < this.maxSize / 2) {
+          this.downloadAndAddLeft();
+        }
+      }
+    } else if (bufferPosition < this.cursor && bufferPosition >= this.cursor - this.bufferCursor) {
+      while (this.cursor != bufferPosition) {
+        this.dataset.pop();
+        this.bufferCursor--;
+        this.cursor--;
+      }
+      if (callback) {
+        callback();
+      }
+      this.fillDatasetBuffer(bufferPosition, undefined);
+    } else if (bufferPosition > this.cursor && bufferPosition < this.cursor + this.dataset.length - this.bufferCursor) {
+      while (this.cursor != bufferPosition) {
+        this.dataset.shift();
+        this.cursor++;
+      }
+      if (callback) {
+        callback();
+      }
+      this.fillDatasetBuffer(bufferPosition, undefined);
+    } else {
       this.dataset = [];
+      this.bufferCursor = 0;
+      this.cursor = bufferPosition;
+      this.downloading = true;
+      this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor])
+        .subscribe(res => {
+          this.downloading = false;
+          this.dataset.push(res);
+          if (callback) {
+            callback();
+          }
+          this.fillDatasetBuffer(bufferPosition, callback);
+        })
     }
 
-    if (this.cursor < this.maxSize / 2) {
-      if (this.dataset.length - this.bufferCursor < this.maxSize - this.cursor) {
-        this.downloading = true;
-        this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor + this.dataset.length])
-          .subscribe(res => {
-            this.downloading = false;
-            this.dataset.push(res);
-            if (callback) {
-              callback();
-            }
-            this.fillDatasetBuffer(bufferPosition, undefined);
-          })
-      } else if (this.bufferCursor < this.cursor) {
-        this.downloading = true;
-        this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor - this.bufferCursor - 1])
-          .subscribe(res => {
-            this.downloading = false;
-            this.dataset.unshift(res);
-            this.bufferCursor++;
-            if (callback) {
-              callback();
-            }
-            this.fillDatasetBuffer(bufferPosition, undefined);
-          })
-      }
-    } else if (this.cursor >= this.names.length - this.maxSize / 2) {
-      if (this.dataset.length - this.bufferCursor < this.names.length - this.cursor) {
-        this.downloading = true;
-        this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor + this.dataset.length])
-          .subscribe(res => {
-            this.downloading = false;
-            this.dataset.push(res);
-            if (callback) {
-              callback();
-            }
-            this.fillDatasetBuffer(bufferPosition, undefined);
-          })
-      } else if (this.bufferCursor < this.maxSize - this.names.length + this.cursor) {
-        this.downloading = true;
-        this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor - this.bufferCursor - 1])
-          .subscribe(res => {
-            this.downloading = false;
-            this.dataset.unshift(res);
-            this.bufferCursor++;
-            if (callback) {
-              callback();
-            }
-            this.fillDatasetBuffer(bufferPosition, undefined);
-          })
-      }
-    } else {
-      if (this.dataset.length - this.bufferCursor < this.maxSize / 2) {
-        this.downloading = true;
-        this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor + this.dataset.length])
-          .subscribe(res => {
-            this.downloading = false;
-            this.dataset.push(res);
-            if (callback) {
-              callback();
-            }
-            this.fillDatasetBuffer(bufferPosition, undefined);
-          })
-      } else if (this.bufferCursor < this.maxSize / 2) {
-        this.downloading = true;
-        this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor - this.bufferCursor - 1])
-          .subscribe(res => {
-            this.downloading = false;
-            this.dataset.unshift(res);
-            this.bufferCursor++;
-            if (callback) {
-              callback();
-            }
-            this.fillDatasetBuffer(bufferPosition, undefined);
-          })
-      }
-    }
     // if (rightElements < this.maxSize / 2) {
     //   console.log("a")
     //   this.downloading = true;
@@ -305,13 +371,38 @@ export class DatasetStorageService {
   }
 
   goToData(dataName: string, callback: Function | undefined) {
-    this.downloadingReset = true;
+    let timeout = 0;
+    if (this.downloading) {
+      this.downloadingReset = true;
+      timeout = 250;
+    }
     setTimeout(() => {
-      this.downloadingReset = false;
       let nameIndex = this.names.indexOf(dataName);
       if (nameIndex >= 0) {
+        this.downloadingReset = false;
         this.fillDatasetBuffer(nameIndex, callback);
       }
-    }, 350);
+    }, timeout);
+  }
+
+  private downloadAndAddLeft() {
+    this.downloading = true;
+    this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor - this.bufferCursor - 1])
+      .subscribe(res => {
+        this.downloading = false;
+        this.dataset.unshift(res);
+        this.bufferCursor++;
+        this.fillDatasetBuffer(this.cursor, undefined);
+      })
+  }
+
+  private downloadAndAddRight() {
+    this.downloading = true;
+    this.datasetService.getDataFromDataset(this.datasetName, this.names[this.cursor + this.dataset.length - this.bufferCursor])
+      .subscribe(res => {
+        this.downloading = false;
+        this.dataset.push(res);
+        this.fillDatasetBuffer(this.cursor, undefined);
+      })
   }
 }
