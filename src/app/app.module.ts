@@ -26,6 +26,7 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 import { DisplayComponent } from './components/display/display.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { LabelSelectComponent } from './components/display/label-select/label-select.component';
+import {MatOptionModule} from "@angular/material/core";
 
 @Injectable()
 export class XhrInterceptor implements HttpInterceptor {
@@ -66,7 +67,8 @@ export class XhrInterceptor implements HttpInterceptor {
         MatMenuModule,
         MatCardModule,
         MatProgressBarModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        MatOptionModule
     ],
   providers: [AuthService, {provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true}],
   bootstrap: [AppComponent]

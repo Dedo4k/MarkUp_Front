@@ -27,10 +27,20 @@
         <mat-card-title>Labels</mat-card-title>
       </mat-card-header>
       <mat-card-content class="label-list-content">
-        <mat-selection-list multiple="false" hideSingleSelectionIndicator="true">
-          <mat-list-option *ngFor="let object of storage.current()?.layout?.object" selected="false"
-                           [style.background-color]="storage.getColor(object.name)" class="label-list-option">
-            {{object.name}}
+        <mat-selection-list #labelList multiple="false" hideSingleSelectionIndicator="true">
+          <mat-list-option *ngFor="let label of labels | keyvalue" selected="false" [value]="label.key"
+                           [style.background-color]="getColor(label.value)"
+                           class="label-list-option"
+                           (click)="selectLabel(label.key)">
+            <div class="row-wrapper">
+              <div class="label-name">
+                <p>{{label.value}}</p>
+              </div>
+              <button mat-icon-button (click)="changeLabelVisibility(label.key)">
+                <mat-icon *ngIf="label.key.isVisible()">visibility</mat-icon>
+                <mat-icon *ngIf="!label.key.isVisible()">visibility_off</mat-icon>
+              </button>
+            </div>
           </mat-list-option>
         </mat-selection-list>
       </mat-card-content>
