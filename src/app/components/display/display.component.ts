@@ -5,7 +5,6 @@ import {ActivatedRoute} from "@angular/router";
 import {Bndbox, Object} from "../../models/layout/annotation";
 import {MatDialog} from "@angular/material/dialog";
 import {LabelSelectComponent} from "./label-select/label-select.component";
-import {DatasetStorageV2Service} from "../../services/dataset-storage-v2.service";
 
 @Component({
   selector: 'app-display',
@@ -27,20 +26,11 @@ export class DisplayComponent implements OnInit {
 
   constructor(public storage: DatasetStorageService,
               private route: ActivatedRoute,
-              private dialog: MatDialog,
-              public st: DatasetStorageV2Service) {
+              private dialog: MatDialog) {
     route.paramMap.subscribe(params => {
       let name = params.get("name");
       if (name != null) {
-
         storage.downloadDataset(name, () => this.displayCurrentData());
-        // st.downloadDataset(name)
-        // .subscribe(result => {
-        //   while(result.length <= 0) {
-        //     console.log("wait");
-        //   }
-        //   console.log("draw");
-        // })
       }
     })
   }
@@ -165,16 +155,6 @@ export class DisplayComponent implements OnInit {
         }
       }
     });
-
-    // new Promise((resolve, reject) => {
-    //   setTimeout(() => {
-    //     if (this.storage.dataset.length > 0) {
-    //       resolve(this.storage.dataset.length);
-    //     }
-    //   }, 1000);
-    // }).then((res) => {
-    //   this.displayCurrentData()
-    // })
   }
 
   displayCurrentData() {
@@ -233,7 +213,6 @@ export class DisplayComponent implements OnInit {
       this.storage.updateData(this.storage.current());
     }
     this.storage.prev(() => this.displayCurrentData());
-    // this.displayCurrentData();
   }
 
   next() {
@@ -241,14 +220,13 @@ export class DisplayComponent implements OnInit {
       this.storage.updateData(this.storage.current());
     }
     this.storage.next(() => this.displayCurrentData());
-    // this.displayCurrentData();
-  }
-
-  openLabelDialog(labels: string[]) {
-    return this.dialog.open(LabelSelectComponent, {data: labels});
   }
 
   goToData(dataName: string) {
     this.storage.goToData(dataName, () => this.displayCurrentData());
+  }
+
+  openLabelDialog(labels: string[]) {
+    return this.dialog.open(LabelSelectComponent, {data: labels});
   }
 }

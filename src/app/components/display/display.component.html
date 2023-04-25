@@ -38,8 +38,8 @@
   </div>
   <div class="display-wrapper">
     <mat-card class="display-zone">
-      <mat-card-header>
-        <mat-card-title>File: {{storage.current()?.imageName}}</mat-card-title>
+      <mat-card-header *ngIf="storage.current()">
+        <mat-card-title>File: {{storage.current().imageName}}</mat-card-title>
         <span class="display-toolbar-spacer"></span>
         <button mat-raised-button color="primary" (click)="prev()">Prev</button>
         <button mat-raised-button color="primary" (click)="next()">Next</button>
