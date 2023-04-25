@@ -33,7 +33,7 @@ export class DisplayComponent implements OnInit {
       let name = params.get("name");
       if (name != null) {
 
-        storage.downloadDataset(name, undefined);
+        storage.downloadDataset(name, () => this.displayCurrentData());
         // st.downloadDataset(name)
         // .subscribe(result => {
         //   while(result.length <= 0) {
@@ -166,15 +166,15 @@ export class DisplayComponent implements OnInit {
       }
     });
 
-    new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (this.storage.dataset.length > 0) {
-          resolve(this.storage.dataset.length);
-        }
-      }, 1000);
-    }).then((res) => {
-      this.displayCurrentData()
-    })
+    // new Promise((resolve, reject) => {
+    //   setTimeout(() => {
+    //     if (this.storage.dataset.length > 0) {
+    //       resolve(this.storage.dataset.length);
+    //     }
+    //   }, 1000);
+    // }).then((res) => {
+    //   this.displayCurrentData()
+    // })
   }
 
   displayCurrentData() {
@@ -246,5 +246,9 @@ export class DisplayComponent implements OnInit {
 
   openLabelDialog(labels: string[]) {
     return this.dialog.open(LabelSelectComponent, {data: labels});
+  }
+
+  goToData(dataName: string) {
+    this.storage.goToData(dataName, () => this.displayCurrentData());
   }
 }

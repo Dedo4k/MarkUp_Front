@@ -14,7 +14,8 @@
         </div>
         <mat-selection-list multiple="false" hideSingleSelectionIndicator="true">
           <mat-list-option *ngFor="let name of storage.names"
-                           [selected]="name == storage.names[storage.cursor]">
+                           [selected]="name == storage.names[storage.cursor]"
+                           (click)="goToData(name)">
             <div matListItemTitle>{{name}}</div>
           </mat-list-option>
         </mat-selection-list>
