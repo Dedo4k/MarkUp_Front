@@ -6,12 +6,13 @@
           {{storage.datasetName}} ({{storage.cursor + 1}}/{{storage.names.length}})
         </mat-card-title>
       </mat-card-header>
-      <mat-card-content class="file-list-content">
+      <mat-card-content>
         <div *ngIf="storage.downloading">
-          <mat-progress-bar mode="determinate"
-                            [value]="storage.dataset.length / storage.maxSize * 100"></mat-progress-bar>
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
           {{storage.dataset.length}}/{{storage.maxSize}}
         </div>
+      </mat-card-content>
+      <mat-card-content class="file-list-content">
         <mat-selection-list multiple="false" hideSingleSelectionIndicator="true">
           <mat-list-option *ngFor="let name of storage.names"
                            [selected]="name == storage.names[storage.cursor]"

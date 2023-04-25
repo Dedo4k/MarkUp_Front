@@ -21,6 +21,7 @@ export class DatasetStorageService {
   cursor = 0;
   bufferCursor = 0;
   downloading = false;
+  downloadingReset = false;
 
   constructor(private datasetService: DatasetService) {
   }
@@ -122,6 +123,10 @@ export class DatasetStorageService {
     //   && bufferPosition + this.maxSize / 2 > this.cursor - this.bufferCursor + this.maxSize) {//shift right
     //
     // }
+
+    if (this.downloadingReset) {
+      return;
+    }
 
     if (bufferPosition !== this.cursor) {
       this.cursor = bufferPosition;
@@ -239,35 +244,43 @@ export class DatasetStorageService {
 
   next(callback: Function | undefined) {
     //TODO попробовать сначала загрузить новый файл а потом только сдвишать указатель
+    // if (this.cursor < this.names.length) {
+    //   this.cursor++;
+    // }
+    // if (this.bufferCursor < this.maxSize) {
+    //   this.bufferCursor++;
+    // }
+    // if (this.bufferCursor > this.maxSize / 2) {
+    //   this.fillDatasetBuffer(Shift.Right, callback);
+    // } else {
+    //   if (callback) {
+    //     callback();
+    //   }
+    // }
     if (this.cursor < this.names.length) {
-      this.cursor++;
-    }
-    if (this.bufferCursor < this.maxSize) {
-      this.bufferCursor++;
-    }
-    if (this.bufferCursor > this.maxSize / 2) {
-      this.fillDatasetBuffer(Shift.Right, callback);
-    } else {
-      if (callback) {
-        callback();
-      }
+      this.downloadingReset = true;
+
+      setTimeout(() => {
+        this.downloadingReset = false;
+        this.fillDatasetBuffer(this.cursor + 1, callback);
+      }, 300);
     }
   }
 
   prev(callback: Function | undefined) {
-    if (0 < this.cursor) {
-      this.cursor--;
-    }
-    if (0 < this.bufferCursor) {
-      this.bufferCursor--;
-    }
-    if (this.cursor >= this.maxSize / 2) {
-      this.fillDatasetBuffer(Shift.Left, callback);
-    } else {
-      if (callback) {
-        callback();
-      }
-    }
+    // if (0 < this.cursor) {
+    //   this.cursor--;
+    // }
+    // if (0 < this.bufferCursor) {
+    //   this.bufferCursor--;
+    // }
+    // if (this.cursor >= this.maxSize / 2) {
+    //   this.fillDatasetBuffer(Shift.Left, callback);
+    // } else {
+    //   if (callback) {
+    //     callback();
+    //   }
+    // }
   }
 
   getLabels() {
@@ -292,9 +305,13 @@ export class DatasetStorageService {
   }
 
   goToData(dataName: string, callback: Function | undefined) {
-    let nameIndex = this.names.indexOf(dataName);
-    if (nameIndex >= 0) {
-      this.fillDatasetBuffer(nameIndex, callback);
-    }
+    this.downloadingReset = true;
+    setTimeout(() => {
+      this.downloadingReset = false;
+      let nameIndex = this.names.indexOf(dataName);
+      if (nameIndex >= 0) {
+        this.fillDatasetBuffer(nameIndex, callback);
+      }
+    }, 350);
   }
 }
