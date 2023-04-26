@@ -26,17 +26,24 @@ export class DatasetStorageService {
   }
 
   downloadDataset(datasetName: string, callback: Function | undefined) {
-    this.dataset = [];
-    this.names = [];
-    this.datasetName = datasetName;
-    this.cursor = 0;
-    this.bufferCursor = 0;
-
-    this.datasetService.getDatasetNames(datasetName)
-      .subscribe(result => {
-        this.names = result;
-        this.fillDatasetBuffer(0, callback);
-      });
+    let timeout = 0;
+    if (this.downloading) {
+      this.downloadingReset = true;
+      timeout = 250;
+    }
+    setTimeout(() => {
+      this.dataset = [];
+      this.names = [];
+      this.datasetName = datasetName;
+      this.cursor = 0;
+      this.bufferCursor = 0;
+      this.downloadingReset = false;
+      this.datasetService.getDatasetNames(datasetName)
+        .subscribe(result => {
+          this.names = result;
+          this.fillDatasetBuffer(0, callback);
+        });
+    }, timeout);
   }
 
   private fillDatasetBuffer(bufferPosition: number, callback: Function | undefined) {

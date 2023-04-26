@@ -29,12 +29,12 @@
       <mat-card-content class="label-list-content">
         <mat-selection-list #labelList multiple="false" hideSingleSelectionIndicator="true">
           <mat-list-option *ngFor="let label of labels | keyvalue" selected="false" [value]="label.key"
-                           [style.background-color]="getColor(label.value)"
+                           [style.background-color]="getColor(label.value.label)"
                            class="label-list-option"
                            (click)="selectLabel(label.key)">
             <div class="row-wrapper">
-              <div class="label-name">
-                <p>{{label.value}}</p>
+              <div>
+                <p>{{label.value.label}}</p>
               </div>
               <button mat-icon-button (click)="changeLabelVisibility(label.key)">
                 <mat-icon *ngIf="label.key.isVisible()">visibility</mat-icon>
