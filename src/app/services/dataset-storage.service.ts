@@ -16,7 +16,6 @@ export class DatasetStorageService {
   datasetName = "";
   dataset: Data[] = [];
   names: string[] = [];
-  colors = new Map([["default", "black"]]);
   maxSize = 20;
   cursor = 0;
   bufferCursor = 0;
@@ -27,21 +26,28 @@ export class DatasetStorageService {
   }
 
   downloadDataset(datasetName: string, callback: Function | undefined) {
-    this.dataset = [];
-    this.names = [];
-    this.datasetName = datasetName;
-    this.cursor = 0;
-    this.bufferCursor = 0;
-
-    this.datasetService.getDatasetNames(datasetName)
-      .subscribe(result => {
-        this.names = result;
-        this.fillDatasetBuffer(0, callback);
-      });
+    let timeout = 0;
+    if (this.downloading) {
+      this.downloadingReset = true;
+      timeout = 250;
+    }
+    setTimeout(() => {
+      this.dataset = [];
+      this.names = [];
+      this.datasetName = datasetName;
+      this.cursor = 0;
+      this.bufferCursor = 0;
+      this.downloadingReset = false;
+      this.datasetService.getDatasetNames(datasetName)
+        .subscribe(result => {
+          this.names = result;
+          this.fillDatasetBuffer(0, callback);
+        });
+    }, timeout);
   }
 
   private fillDatasetBuffer(bufferPosition: number, callback: Function | undefined) {
-    console.log(this.dataset);
+    // console.log(this.dataset);
 
     if (this.downloadingReset) {
       this.downloadingReset = false;
@@ -138,17 +144,6 @@ export class DatasetStorageService {
 
   getLabels() {
     return Array.from(new Set(this.current().layout.object.map(obj => obj.name)));
-  }
-
-  getColor(label: string) {
-    if (!this.colors.has(label)) {
-      let color = Math.floor(Math.random() * 16777216).toString(16);
-      while (color.length < 6) {
-        color = 0 + color;
-      }
-      this.colors.set(label, "#" + color);
-    }
-    return this.colors.get(label);
   }
 
   updateData(data: Data) {

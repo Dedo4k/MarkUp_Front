@@ -26,6 +26,8 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 import { DisplayComponent } from './components/display/display.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { LabelSelectComponent } from './components/display/label-select/label-select.component';
+import {MatOptionModule} from "@angular/material/core";
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @Injectable()
 export class XhrInterceptor implements HttpInterceptor {
@@ -50,24 +52,26 @@ export class XhrInterceptor implements HttpInterceptor {
     DisplayComponent,
     LabelSelectComponent,
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatToolbarModule,
-        MatIconModule,
-        MatButtonModule,
-        MatSidenavModule,
-        HttpClientModule,
-        MatListModule,
-        MatDialogModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatMenuModule,
-        MatCardModule,
-        MatProgressBarModule,
-        MatProgressSpinnerModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSidenavModule,
+    HttpClientModule,
+    MatListModule,
+    MatDialogModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatMenuModule,
+    MatCardModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatOptionModule,
+    MatTooltipModule
+  ],
   providers: [AuthService, {provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true}],
   bootstrap: [AppComponent]
 })
