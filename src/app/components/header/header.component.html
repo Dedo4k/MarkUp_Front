@@ -5,6 +5,7 @@
         <span>MarkUp</span>
       </h3>
       <button mat-button routerLink="/datasets" class="header-btn">Datasets</button>
+      <button *ngIf="hasRole('ROLE_ADMIN')" mat-button routerLink="/moderators" class="header-btn">Moderators</button>
 
       <span class="example-spacer"></span>
 

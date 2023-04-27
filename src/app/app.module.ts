@@ -27,6 +27,7 @@ import {LabelSelectComponent} from './components/display/label-select/label-sele
 import {MatOptionModule} from "@angular/material/core";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {ModeratorsComponent} from './components/moderators/moderators.component';
+import { DatasetSelectComponent } from './components/datasets/dataset-select/dataset-select.component';
 
 @Injectable()
 export class XhrInterceptor implements HttpInterceptor {
@@ -49,6 +50,7 @@ export class XhrInterceptor implements HttpInterceptor {
     DisplayComponent,
     LabelSelectComponent,
     ModeratorsComponent,
+    DatasetSelectComponent,
   ],
   imports: [
     BrowserModule,

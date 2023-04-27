@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-moderators',
@@ -6,5 +7,12 @@ import { Component } from '@angular/core';
   styleUrls: ['./moderators.component.sass']
 })
 export class ModeratorsComponent {
+
+  constructor(private authService: AuthService) {
+    if (!authService.isAuthenticated()) {
+      authService.openLoginDialog("/moderators");
+    }
+  }
+
 
 }

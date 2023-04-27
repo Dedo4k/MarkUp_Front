@@ -4,15 +4,23 @@
       <mat-card-header class="list-header">
         <mat-card-title class="list-title">Datasets</mat-card-title>
         <span class="list-header-spacer"></span>
-        <button mat-raised-button color="primary" class="list-header-btn">Load New</button>
-        <button mat-raised-button color="primary" class="list-header-btn">Load Existing</button>
+        <button mat-raised-button color="primary" class="list-header-btn" (click)="file_input.click()">Load New</button>
+        <button mat-raised-button color="primary" class="list-header-btn" (click)="openLoadExistingDialog()">Load Existing</button>
+        <input hidden type="file" webkitdirectory (change)="handleFileSelect($event)" #file_input/>
       </mat-card-header>
       <mat-divider class="list-divider"></mat-divider>
       <mat-card-content>
-        <div *ngFor="let dataset of datasets">
+        <div *ngIf="!auth.authenticated.datasets?.length">
+          <p>Nothing to show. Upload new or Load existing dataset.</p>
+        </div>
+        <div *ngFor="let dataset of auth.authenticated.datasets">
           <button mat-flat-button routerLink="/display/{{dataset.name}}" class="list-btn">
-            <mat-icon color="primary">folder</mat-icon>
-            {{dataset.name}}
+            <div class="row-wrapper">
+              <mat-icon color="primary">folder</mat-icon>
+              <div>{{dataset.name}}</div>
+              <div>Created At: {{dataset.createdAt | date: "medium"}}</div>
+              <div>Updated At: {{dataset.updatedAt | date: "medium"}}</div>
+            </div>
           </button>
         </div>
       </mat-card-content>

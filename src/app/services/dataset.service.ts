@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {Dataset} from "../models/dataset";
 import {map, Observable} from "rxjs";
 import {AuthService} from "./auth.service";
@@ -21,15 +21,15 @@ export class DatasetService {
   }
 
   getLoadedDatasets(): Observable<Dataset[]> {
-    return this.http.get<Dataset[]>(this.apiUrl, this.authService.options);
+    return this.http.get<Dataset[]>(this.apiUrl, {headers: this.authService.headers});
   }
 
   getDatasetNames(datasetName: string): Observable<string[]> {
-    return this.http.get<string[]>(this.apiUrl + "/" + datasetName + "/names", this.authService.options);
+    return this.http.get<string[]>(this.apiUrl + "/" + datasetName + "/names", {headers: this.authService.headers});
   }
 
   getDataFromDataset(datasetName: string, dataName: string): Observable<Data> {
-    return this.http.get<DataDto>(this.apiUrl + "/" + datasetName + "/" + dataName, this.authService.options)
+    return this.http.get<DataDto>(this.apiUrl + "/" + datasetName + "/" + dataName, {headers: this.authService.headers})
       .pipe(map((dto) => {
           let data = dto as unknown as Data;
           let annotation = this.helper.parseData(dto.layout, dto.layoutType);
@@ -54,6 +54,14 @@ export class DatasetService {
     formData.append("file", file);
 
     return this.http.post<Data>(this.apiUrl + "/" + data.datasetName + "/" + data.dataName, formData,
-      this.authService.options);
+      {headers: this.authService.headers});
+  }
+
+  loadDatasets(datasets: string[]): Observable<Dataset[]> {
+    let httpParams = new HttpParams().set("datasetNames", datasets.toString());
+    return this.http.get<Dataset[]>(this.apiUrl + "/load", {
+      headers: this.authService.headers,
+      params: httpParams
+    });
   }
 }
