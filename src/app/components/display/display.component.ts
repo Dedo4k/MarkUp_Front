@@ -6,6 +6,7 @@ import {Bndbox, Object} from "../../models/layout/annotation";
 import {MatDialog} from "@angular/material/dialog";
 import {LabelSelectComponent} from "./label-select/label-select.component";
 import {MatSelectionList} from "@angular/material/list";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-display',
@@ -36,9 +37,13 @@ export class DisplayComponent implements OnInit {
 
   constructor(public storage: DatasetStorageService,
               private route: ActivatedRoute,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private authService: AuthService) {
+    if (!authService.isAuthenticated()) {
+      authService.openLoginDialog('/datasets');
+    }
     route.paramMap.subscribe(params => {
-      let name = params.get("name");
+      let name = params.get("datasetName");
       if (name != null) {
         storage.downloadDataset(name, () => this.displayCurrentData());
       }

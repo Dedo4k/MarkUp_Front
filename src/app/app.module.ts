@@ -10,24 +10,23 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
 import {MatSidenavModule} from "@angular/material/sidenav";
-import {MarkupComponent} from './components/markup/markup.component';
 import {DatasetsComponent} from './components/datasets/datasets.component';
 import {HTTP_INTERCEPTORS, HttpClientModule, HttpHandler, HttpInterceptor, HttpRequest} from "@angular/common/http";
 import {MatListModule} from "@angular/material/list";
 import {AuthService} from "./services/auth.service";
 import {MatDialogModule} from "@angular/material/dialog";
-import { LoginComponent } from './components/login/login.component';
+import {LoginComponent} from './components/login/login.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
 import {MatMenuModule} from "@angular/material/menu";
-import { DatasetDetailsComponent } from './components/datasets/dataset-details/dataset-details.component';
 import {MatCardModule} from "@angular/material/card";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
-import { DisplayComponent } from './components/display/display.component';
+import {DisplayComponent} from './components/display/display.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
-import { LabelSelectComponent } from './components/display/label-select/label-select.component';
+import {LabelSelectComponent} from './components/display/label-select/label-select.component';
 import {MatOptionModule} from "@angular/material/core";
 import {MatTooltipModule} from "@angular/material/tooltip";
+import {ModeratorsComponent} from './components/moderators/moderators.component';
 
 @Injectable()
 export class XhrInterceptor implements HttpInterceptor {
@@ -45,12 +44,11 @@ export class XhrInterceptor implements HttpInterceptor {
     AppComponent,
     FooterComponent,
     HeaderComponent,
-    MarkupComponent,
     DatasetsComponent,
     LoginComponent,
-    DatasetDetailsComponent,
     DisplayComponent,
     LabelSelectComponent,
+    ModeratorsComponent,
   ],
   imports: [
     BrowserModule,
