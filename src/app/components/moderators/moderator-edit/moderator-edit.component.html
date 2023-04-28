@@ -1,0 +1,22 @@
+<h1 matDialogTitle>Edit Moderator {{data.moderator.username}}</h1>
+<div matDialogContent>
+  <form [formGroup]="editForm" (ngSubmit)="onSubmit(editForm.value)">
+    <div class="col-wrapper">
+      <mat-form-field>
+        <mat-label>Roles</mat-label>
+        <mat-select formControlName="roles" multiple>
+          <mat-option *ngFor="let role of data.roles" [value]="role.id">{{role.id}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Datasets</mat-label>
+        <mat-select formControlName="datasets" multiple>
+          <mat-option *ngFor="let dataset of data.datasets" [value]="dataset.name">{{dataset.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div>
+      <button type="submit" mat-button [disabled]="editForm.invalid">Update</button>
+    </div>
+  </form>
+</div>

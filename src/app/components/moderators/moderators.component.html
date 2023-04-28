@@ -1,28 +1,36 @@
 <div class="content-wrapper">
-  <button mat-raised-button color="primary" (click)="openModeratorCreateDialog()">New Moderator</button>
+  <mat-toolbar>
+    <button mat-raised-button color="primary" (click)="openModeratorCreateDialog()">New Moderator</button>
+  </mat-toolbar>
   <div *ngIf="!auth.moderators?.length">
     <p>Nothing to show. Create new Moderator.</p>
   </div>
-  <div *ngFor="let moderator of auth.moderators">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{moderator.username}}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div *ngFor="let role of moderator.roles">
-          <p>{{role.id}}</p>
-          <div *ngFor="let operation of role.operations">
-            <p>{{operation.id}}</p>
+  <div class="moderators-card-wrapper">
+    <div *ngFor="let moderator of auth.moderators" class="moderator-card">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{moderator.username}}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="moderator-card-content">
+          <div *ngFor="let role of moderator.roles">
+            <p>{{role.id}}</p>
+            <div *ngFor="let operation of role.operations">
+              <p>{{operation.id}}</p>
+            </div>
           </div>
-        </div>
-        <mat-divider></mat-divider>
-        <div *ngFor="let dataset of moderator.datasets">
-          <p>{{dataset.name}}</p>
-          <p>{{dataset.createdAt}}</p>
-          <p>{{dataset.updatedAt}}</p>
-        </div>
-      </mat-card-content>
-    </mat-card>
+          <mat-divider></mat-divider>
+          <div *ngFor="let dataset of moderator.datasets">
+            <p>{{dataset.name}}</p>
+            <p>{{dataset.createdAt}}</p>
+            <p>{{dataset.updatedAt}}</p>
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="deleteModerator(moderator.id)">Delete</button>
+          <button mat-raised-button color="primary" (click)="editModerator(moderator.id)">Edit</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
   </div>
 </div>
 

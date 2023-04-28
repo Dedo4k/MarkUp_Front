@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {AuthService} from "./auth.service";
-import {CreateUserDto, Moderator} from "../models/user";
+import {CreateUserDto, EditUserDto, Moderator, User} from "../models/user";
 import {Observable} from "rxjs";
 
 @Injectable({
@@ -16,5 +16,13 @@ export class ModeratorsService {
 
   createModerator(userDto: CreateUserDto): Observable<Moderator> {
     return this.http.post<Moderator>(this.apiUrl + "/create", userDto, {headers: this.authService.headers});
+  }
+
+  deleteModerator(id: number): Observable<Moderator> {
+    return this.http.delete<Moderator>(this.apiUrl + "/" + id, {headers: this.authService.headers});
+  }
+
+  updateModerator(id: number, editUserDto: EditUserDto): Observable<Moderator> {
+    return this.http.put<Moderator>(this.apiUrl + "/" + id, editUserDto, {headers: this.authService.headers});
   }
 }

@@ -15,7 +15,6 @@ export class DatasetSelectComponent {
   constructor(public dialogRef: MatDialogRef<DatasetSelectComponent>,
               @Inject(MAT_DIALOG_DATA) public data: Dataset[]
   ) {
-    console.log(data)
     this.selectForm = new FormGroup({
       datasets: new FormControl('', Validators.required)
     });

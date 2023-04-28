@@ -30,6 +30,8 @@ import {ModeratorsComponent} from './components/moderators/moderators.component'
 import { DatasetSelectComponent } from './components/datasets/dataset-select/dataset-select.component';
 import { ModeratorCreateComponent } from './components/moderators/moderator-create/moderator-create.component';
 import {MatSelectModule} from "@angular/material/select";
+import { ModeratorEditComponent } from './components/moderators/moderator-edit/moderator-edit.component';
+import {MatCheckboxModule} from "@angular/material/checkbox";
 
 @Injectable()
 export class XhrInterceptor implements HttpInterceptor {
@@ -54,28 +56,30 @@ export class XhrInterceptor implements HttpInterceptor {
     ModeratorsComponent,
     DatasetSelectComponent,
     ModeratorCreateComponent,
+    ModeratorEditComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatSidenavModule,
-    HttpClientModule,
-    MatListModule,
-    MatDialogModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatMenuModule,
-    MatCardModule,
-    MatProgressBarModule,
-    MatProgressSpinnerModule,
-    MatOptionModule,
-    MatTooltipModule,
-    MatSelectModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatButtonModule,
+        MatSidenavModule,
+        HttpClientModule,
+        MatListModule,
+        MatDialogModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatMenuModule,
+        MatCardModule,
+        MatProgressBarModule,
+        MatProgressSpinnerModule,
+        MatOptionModule,
+        MatTooltipModule,
+        MatSelectModule,
+        MatCheckboxModule
+    ],
   providers: [AuthService, {provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true}],
   bootstrap: [AppComponent]
 })

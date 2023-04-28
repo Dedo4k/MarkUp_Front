@@ -33,3 +33,10 @@ export interface CreateUserDto {
   roles: string[];
   datasets: string[];
 }
+
+export interface EditUserDto {
+  password: string;
+  roles: string[];
+  datasets: string[];
+  enabled: boolean;
+}
