@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MarkupComponent } from './markup.component';
+import { ModeratorEditComponent } from './moderator-edit.component';
 
-describe('MarkupComponent', () => {
-  let component: MarkupComponent;
-  let fixture: ComponentFixture<MarkupComponent>;
+describe('ModeratorEditComponent', () => {
+  let component: ModeratorEditComponent;
+  let fixture: ComponentFixture<ModeratorEditComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MarkupComponent ]
+      declarations: [ ModeratorEditComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MarkupComponent);
+    fixture = TestBed.createComponent(ModeratorEditComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

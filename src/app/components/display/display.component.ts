@@ -6,6 +6,7 @@ import {Bndbox, Object} from "../../models/layout/annotation";
 import {MatDialog} from "@angular/material/dialog";
 import {LabelSelectComponent} from "./label-select/label-select.component";
 import {MatSelectionList} from "@angular/material/list";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-display',
@@ -36,9 +37,13 @@ export class DisplayComponent implements OnInit {
 
   constructor(public storage: DatasetStorageService,
               private route: ActivatedRoute,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private authService: AuthService) {
+    if (!authService.isAuthenticated()) {
+      authService.openLoginDialog('/datasets');
+    }
     route.paramMap.subscribe(params => {
-      let name = params.get("name");
+      let name = params.get("datasetName");
       if (name != null) {
         storage.downloadDataset(name, () => this.displayCurrentData());
       }
@@ -101,64 +106,14 @@ export class DisplayComponent implements OnInit {
         return;
       }
 
-      let rect = new Konva.Rect({
-        x: this.drawingRect?.x(),
-        y: this.drawingRect?.y(),
-        width: this.drawingRect?.width(),
-        height: this.drawingRect?.height(),
-        stroke: "black",
-        strokeWidth: 2,
-        strokeScaleEnabled: false
-      });
-      if (rect.height() != 0 && rect.width() != 0) {
+      if (this.drawingRect?.height() != 0 && this.drawingRect?.width() != 0) {
         this.openLabelDialog(this.storage.getLabels()).afterClosed().subscribe(result => {
-          if (result?.label.length) {
+          if (result?.label.length && this.drawingRect) {
             let label = result.label instanceof Array ? result.label[0] : result.label;
-            rect.setAttr("stroke", this.getColor(label));
-            rect.on("mouseenter mousemove", (e) => {
-              let pointerPosition = this.stage?.getPointerPosition();
-
-              this.tooltip?.destroy();
-              this.tooltip = new Konva.Label({
-                x: Number(pointerPosition?.x) + 5,
-                y: Number(pointerPosition?.y) + 5
-              });
-              this.tooltip.add(new Konva.Tag({
-                fill: "white",
-                stroke: "black",
-                strokeWidth: 1
-              }));
-              this.tooltip?.add(new Konva.Text({
-                text: label,
-                fontSize: 20,
-                fill: "black",
-                padding: 3
-              }));
-              this.tooltipLayer?.add(this.tooltip);
-              this.tooltip?.visible(true);
-            });
-            rect.on("mouseleave", (e) => {
-              this.tooltip?.visible(false);
-            });
-            rect.on("transform", (e) => {
-              this.labels.get(e.target as Konva.Rect).text.setAttrs({
-                scaleX: 1,
-                scaleY: 1
-              });
-            });
-            let text = new Konva.Text({
-              x: rect.x(),
-              y: rect.y(),
-              text: label,
-              fill: this.getColor(label),
-              fontSize: 14
-            });
-            this.layoutLayer?.add(rect, text);
-            let obj = this.buildObject(rect, label);
+            let obj = this.buildObject(this.drawingRect, label);
+            this.drawBndbox(obj.bndbox, label);
             this.storage.current().layout.object.push(obj);
             this.changes = true;
-            this.labels.set(rect, {label: label, text: text});
-            this.allLabels.add(label);
           } else {
             this.drawingRect?.destroy();
           }
@@ -169,38 +124,18 @@ export class DisplayComponent implements OnInit {
 
     this.stage.on("click tap", (e) => {
       if (!(e.target instanceof Konva.Rect)) {
-        this.layoutTransformer?.nodes().forEach(e => e.setDraggable(false));
-        this.layoutTransformer?.destroy();
-        this.labelList?.deselectAll();
+        this.clearSelections();
         return;
       }
       if (this.layoutTransformer?.nodes().includes(e.target)) {
-        e.target.draggable(false);
-        this.layoutTransformer?.destroy();
-        this.labelList?.deselectAll();
+        this.clearSelections();
         return;
       }
 
-      this.labelList?.deselectAll();
-      this.layoutTransformer?.nodes().forEach(e => e.setDraggable(false));
-      this.layoutTransformer?.destroy();
+      this.clearSelections();
       this.layoutTransformer = new Konva.Transformer();
       this.layoutLayer?.add(this.layoutTransformer);
       e.target.setDraggable(true);
-      e.target.on("dragstart", (e) => {
-        this.changes = true;
-      });
-      e.target.on("transformstart", (e) => {
-        this.changes = true;
-      })
-      e.target.on("visibleChange", (e) => {
-        if (!e.currentTarget.isVisible()) {
-          if (this.layoutTransformer?.nodes().includes(e.currentTarget)) {
-            this.layoutTransformer?.nodes().forEach(e => e.setDraggable(false));
-            this.layoutTransformer?.destroy();
-          }
-        }
-      })
       this.layoutTransformer.nodes([e.target, this.labels.get(e.target).text]);
       let style = this.stage?.container().style as CSSStyleDeclaration;
       style.cursor = "move";
@@ -242,6 +177,7 @@ export class DisplayComponent implements OnInit {
             let text = this.labels.get(layout as Konva.Rect).text;
             text.destroy();
             layout.destroy();
+            this.layoutTransformer?.destroy();
             this.labels.delete(layout as Konva.Rect);
             this.changes = true;
           });
@@ -286,36 +222,27 @@ export class DisplayComponent implements OnInit {
       strokeScaleEnabled: false
     });
     rect.on("mouseenter mousemove", (e) => {
-      let pointerPosition = this.stage?.getPointerPosition();
-
-      this.tooltip?.destroy();
-      this.tooltip = new Konva.Label({
-        x: Number(pointerPosition?.x) + 5,
-        y: Number(pointerPosition?.y) + 5
-      });
-      this.tooltip.add(new Konva.Tag({
-        fill: "white",
-        stroke: "black",
-        strokeWidth: 1
-      }));
-      let text = new Konva.Text({
-        text: label,
-        fontSize: 20,
-        fill: "black",
-        padding: 3
-      });
-      this.tooltip?.add(text);
-      this.tooltipLayer?.add(this.tooltip);
-      this.tooltip?.visible(true);
+      this.showTooltip(label);
     });
     rect.on("mouseleave", (e) => {
-      this.tooltip?.visible(false);
+      this.hideTooltip();
+    });
+    rect.on("dragstart", (e) => {
+      this.changes = true;
     });
     rect.on("transform", (e) => {
+      this.changes = true;
       this.labels.get(e.target as Konva.Rect).text.setAttrs({
         scaleX: 1,
         scaleY: 1
       });
+    });
+    rect.on("visibleChange", (e) => {
+      if (!e.currentTarget.isVisible()) {
+        if (this.layoutTransformer?.nodes().includes(e.currentTarget)) {
+          this.clearSelections();
+        }
+      }
     });
 
     let text = new Konva.Text({
@@ -394,6 +321,40 @@ export class DisplayComponent implements OnInit {
     rect.setAttr("visible", !rect.isVisible());
     let text = this.labels.get(rect).text;
     text.setAttr("visible", !text.isVisible());
+  }
+
+  showTooltip(label: string) {
+    let pointerPosition = this.stage?.getPointerPosition();
+
+    this.tooltip?.destroy();
+    this.tooltip = new Konva.Label({
+      x: Number(pointerPosition?.x) + 5,
+      y: Number(pointerPosition?.y) + 5
+    });
+    this.tooltip.add(new Konva.Tag({
+      fill: "white",
+      stroke: "black",
+      strokeWidth: 1
+    }));
+    let text = new Konva.Text({
+      text: label,
+      fontSize: 20,
+      fill: "black",
+      padding: 3
+    });
+    this.tooltip?.add(text);
+    this.tooltipLayer?.add(this.tooltip);
+    this.tooltip?.visible(true);
+  }
+
+  hideTooltip() {
+    this.tooltip?.visible(false);
+  }
+
+  clearSelections() {
+    this.layoutTransformer?.nodes().forEach(e => e.setDraggable(false));
+    this.layoutTransformer?.destroy();
+    this.labelList?.deselectAll();
   }
 
   openLabelDialog(labels: string[]) {

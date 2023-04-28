@@ -1,3 +1,5 @@
+import {Dataset} from "./dataset";
+
 export interface User {
   username: string;
   roles: Role[];
@@ -5,6 +7,8 @@ export interface User {
   locked: boolean;
   expiredCredentials: boolean;
   enabled: boolean;
+  datasets: Dataset[];
+  moderators: Moderator[];
 }
 
 export interface Role {
@@ -14,4 +18,25 @@ export interface Role {
 
 export interface Operation {
   id: string;
+}
+
+export interface Moderator {
+  id: number;
+  username: string;
+  roles: Role[];
+  datasets: Dataset[];
+}
+
+export interface CreateUserDto {
+  username: string;
+  password: string;
+  roles: string[];
+  datasets: string[];
+}
+
+export interface EditUserDto {
+  password: string;
+  roles: string[];
+  datasets: string[];
+  enabled: boolean;
 }

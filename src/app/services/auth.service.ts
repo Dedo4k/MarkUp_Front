@@ -13,7 +13,7 @@ import {Router} from "@angular/router";
 export class AuthService {
 
   authenticated = {} as User;
-  options = {};
+  headers = {};
 
   constructor(private http: HttpClient,
               private helper: HelperService,
@@ -24,11 +24,9 @@ export class AuthService {
     let auth = localStorage.getItem("currentAuth");
     if (user != null && auth != null) {
       this.authenticated = JSON.parse(user) as User;
-      this.options = {
-        headers: new HttpHeaders({
-          authorization: auth
-        })
-      };
+      this.headers = new HttpHeaders({
+        authorization: auth
+      });
     }
   }
 
@@ -36,13 +34,11 @@ export class AuthService {
 
     let auth = 'Basic ' + btoa(credentials.username + ':' + credentials.password);
 
-    this.options = {
-      headers: new HttpHeaders(credentials ? {
+    this.headers =  new HttpHeaders(credentials ? {
         authorization: auth
-      } : {})
-    };
+      } : {});
 
-    this.http.get<User>('/api/v2/auth', this.options).subscribe(response => {
+    this.http.get<User>('/api/v2/auth', {headers: this.headers}).subscribe(response => {
       if (response) {
         this.authenticated = response;
         localStorage.setItem("currentUser", JSON.stringify(response));
@@ -72,7 +68,7 @@ export class AuthService {
 
   logout(routeTo: string): void {
     this.authenticated = {} as User;
-    this.options = {};
+    this.headers = {};
     localStorage.removeItem("currentUser");
     localStorage.removeItem("currentAuth");
     this.router.navigateByUrl(routeTo);
