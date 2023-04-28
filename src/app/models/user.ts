@@ -8,6 +8,7 @@ export interface User {
   expiredCredentials: boolean;
   enabled: boolean;
   datasets: Dataset[];
+  moderators: Moderator[];
 }
 
 export interface Role {
@@ -17,4 +18,18 @@ export interface Role {
 
 export interface Operation {
   id: string;
+}
+
+export interface Moderator {
+  id: number;
+  username: string;
+  roles: Role[];
+  datasets: Dataset[];
+}
+
+export interface CreateUserDto {
+  username: string;
+  password: string;
+  roles: string[];
+  datasets: string[];
 }

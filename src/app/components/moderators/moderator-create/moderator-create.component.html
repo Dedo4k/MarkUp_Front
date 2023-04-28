@@ -1,0 +1,37 @@
+<h1 matDialogTitle>New Moderator</h1>
+<div matDialogContent>
+  <form [formGroup]="createForm" (ngSubmit)="onSubmit(createForm.value)">
+    <div class="col-wrapper">
+      <mat-form-field>
+        <mat-label>Username</mat-label>
+        <input matInput type="text" formControlName="username">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Repeat Password</mat-label>
+        <input matInput type="password" formControlName="confirmPassword">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Roles</mat-label>
+        <mat-select formControlName="roles" multiple>
+          <mat-option *ngFor="let role of data.roles" [value]="role.id">{{role.id}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Datasets</mat-label>
+        <mat-select formControlName="datasets" multiple>
+          <mat-option *ngFor="let dataset of data.datasets" [value]="dataset.name">{{dataset.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div *ngIf="createForm.errors?.['passwordsNotSame']">
+      Passwords not same
+    </div>
+    <div>
+      <button type="submit" mat-button [disabled]="createForm.invalid">Create</button>
+    </div>
+  </form>
+</div>

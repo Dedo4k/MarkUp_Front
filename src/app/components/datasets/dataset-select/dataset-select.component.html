@@ -1,6 +1,5 @@
 <h1 matDialogTitle>Select Datasets</h1>
 <div matDialogContent>
-  <mat-spinner *ngIf="!data.length"></mat-spinner>
   <form [formGroup]="selectForm" (ngSubmit)="onSubmit(selectForm.value)">
     <mat-selection-list multiple="true" formControlName="datasets">
       <mat-list-option *ngFor="let dataset of data" [value]="dataset.name">

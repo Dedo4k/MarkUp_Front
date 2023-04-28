@@ -28,6 +28,8 @@ import {MatOptionModule} from "@angular/material/core";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {ModeratorsComponent} from './components/moderators/moderators.component';
 import { DatasetSelectComponent } from './components/datasets/dataset-select/dataset-select.component';
+import { ModeratorCreateComponent } from './components/moderators/moderator-create/moderator-create.component';
+import {MatSelectModule} from "@angular/material/select";
 
 @Injectable()
 export class XhrInterceptor implements HttpInterceptor {
@@ -51,6 +53,7 @@ export class XhrInterceptor implements HttpInterceptor {
     LabelSelectComponent,
     ModeratorsComponent,
     DatasetSelectComponent,
+    ModeratorCreateComponent,
   ],
   imports: [
     BrowserModule,
@@ -70,7 +73,8 @@ export class XhrInterceptor implements HttpInterceptor {
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatOptionModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatSelectModule
   ],
   providers: [AuthService, {provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true}],
   bootstrap: [AppComponent]
