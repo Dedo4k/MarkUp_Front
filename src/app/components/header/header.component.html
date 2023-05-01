@@ -10,7 +10,7 @@
       <span class="example-spacer"></span>
 
       <button *ngIf="!isAuthenticated" mat-button class="header-btn"
-              (click)="auth.openLoginDialog('/')">
+              (click)="auth.openLoginDialog('/', undefined)">
         <mat-icon>login</mat-icon>
         Sign In
       </button>

@@ -1,6 +1,8 @@
 <div class="content-wrapper">
   <mat-toolbar>
-    <button mat-raised-button color="primary" (click)="openModeratorCreateDialog()">New Moderator</button>
+    <button mat-raised-button color="primary" class="toolbar-btn" (click)="openModeratorCreateDialog()">New Moderator
+    </button>
+    <button mat-raised-button color="primary" class="toolbar-btn" routerLink="/roles">Roles</button>
   </mat-toolbar>
   <div *ngIf="!auth.moderators?.length">
     <p>Nothing to show. Create new Moderator.</p>
@@ -12,22 +14,43 @@
           <mat-card-title>{{moderator.username}}</mat-card-title>
         </mat-card-header>
         <mat-card-content class="moderator-card-content">
-          <div *ngFor="let role of moderator.roles">
-            <p>{{role.id}}</p>
-            <div *ngFor="let operation of role.operations">
-              <p>{{operation.id}}</p>
-            </div>
-          </div>
-          <mat-divider></mat-divider>
-          <div *ngFor="let dataset of moderator.datasets">
-            <p>{{dataset.name}}</p>
-            <p>{{dataset.createdAt}}</p>
-            <p>{{dataset.updatedAt}}</p>
-          </div>
+          <mat-accordion>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Roles</mat-panel-title>
+              </mat-expansion-panel-header>
+              <div *ngFor="let role of moderator.roles">
+                <mat-divider></mat-divider>
+                <p>{{role.id}}</p>
+                <p>Operations:</p>
+                <div *ngFor="let operation of role.operations">
+                  <p>{{operation.id}}</p>
+                </div>
+              </div>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Datasets</mat-panel-title>
+              </mat-expansion-panel-header>
+              <div *ngFor="let dataset of moderator.datasets">
+                <mat-divider></mat-divider>
+                <p>{{dataset.name}}</p>
+                <div class="row-wrapper">
+                  <div>Created At:</div>
+                  <div>{{dataset.createdAt | date: "medium"}}</div>
+                </div>
+                <div class="row-wrapper">
+                  <div>Updated At:</div>
+                  <div>{{dataset.updatedAt | date: "medium"}}</div>
+                </div>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-raised-button color="primary" (click)="deleteModerator(moderator.id)">Delete</button>
-          <button mat-raised-button color="primary" (click)="editModerator(moderator.id)">Edit</button>
+          <button mat-raised-button color="primary" class="card-btn" (click)="deleteModerator(moderator.id)">Delete
+          </button>
+          <button mat-raised-button color="primary" class="card-btn" (click)="editModerator(moderator.id)">Edit</button>
         </mat-card-actions>
       </mat-card>
     </div>

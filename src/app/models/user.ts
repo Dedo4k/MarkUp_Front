@@ -40,3 +40,12 @@ export interface EditUserDto {
   datasets: string[];
   enabled: boolean;
 }
+
+export interface CreateRoleDto {
+  name: string;
+  operations: string[];
+}
+
+export interface EditRoleDto {
+  operations: string[];
+}

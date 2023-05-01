@@ -25,8 +25,8 @@ export class ModeratorCreateComponent {
         username: new FormControl("", Validators.required),
         password: new FormControl("", Validators.required),
         confirmPassword: new FormControl("", Validators.required),
-        roles: new FormControl("", Validators.required),
-        datasets: new FormControl("")
+        roles: new FormControl([], Validators.required),
+        datasets: new FormControl([])
       },
       {validators: this.passwordValidator})
   }

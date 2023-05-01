@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {DatasetService} from "../../services/dataset.service";
 import {Dataset} from "../../models/dataset";
 import {AuthService} from "../../services/auth.service";
@@ -17,9 +17,7 @@ export class DatasetsComponent {
   constructor(private datasetService: DatasetService,
               private authService: AuthService,
               private dialog: MatDialog) {
-    if (!authService.isAuthenticated()) {
-      authService.openLoginDialog('/datasets');
-    }
+    authService.auth('/datasets', undefined);
   }
 
   get auth(): AuthService {

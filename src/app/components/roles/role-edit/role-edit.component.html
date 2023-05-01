@@ -1,0 +1,16 @@
+<h1 matDialogTitle>Edit Role {{data.role.id}}</h1>
+<div matDialogContent>
+  <form [formGroup]="editForm" (ngSubmit)="onSubmit(editForm.value)">
+    <div class="col-wrapper">
+      <mat-form-field>
+        <mat-label>Operations</mat-label>
+        <mat-select formControlName="operations" multiple>
+          <mat-option *ngFor="let operation of data.operations" [value]="operation.id">{{operation.id}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div>
+      <button type="submit" mat-button [disabled]="editForm.invalid">Edit</button>
+    </div>
+  </form>
+</div>

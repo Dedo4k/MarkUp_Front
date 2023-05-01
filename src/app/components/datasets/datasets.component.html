@@ -1,30 +1,34 @@
 <div class="content-wrapper">
-  <div class="dataset-list">
-    <mat-card>
-      <mat-card-header class="list-header">
-        <mat-card-title class="list-title">Datasets</mat-card-title>
-        <span class="list-header-spacer"></span>
-        <button mat-raised-button color="primary" class="list-header-btn" (click)="file_input.click()">Load New</button>
-        <button mat-raised-button color="primary" class="list-header-btn" (click)="openLoadExistingDialog()">Load Existing</button>
-        <input hidden type="file" webkitdirectory (change)="handleFileSelect($event)" #file_input/>
-      </mat-card-header>
-      <mat-divider class="list-divider"></mat-divider>
-      <mat-card-content>
-        <div *ngIf="!auth.authenticated.datasets?.length">
-          <p>Nothing to show. Upload new or Load existing dataset.</p>
-        </div>
-        <div *ngFor="let dataset of auth.authenticated.datasets">
-          <button mat-flat-button routerLink="/display/{{dataset.name}}" class="list-btn">
-            <div class="row-wrapper">
-              <mat-icon color="primary">folder</mat-icon>
-              <div>{{dataset.name}}</div>
-              <div>Created At: {{dataset.createdAt | date: "medium"}}</div>
-              <div>Updated At: {{dataset.updatedAt | date: "medium"}}</div>
-            </div>
+  <mat-toolbar>
+    <button mat-raised-button color="primary" class="toolbar-btn" (click)="file_input.click()">Load New</button>
+    <button mat-raised-button color="primary" class="toolbar-btn" (click)="openLoadExistingDialog()">Load Existing
+    </button>
+    <input hidden type="file" webkitdirectory (change)="handleFileSelect($event)" #file_input/>
+  </mat-toolbar>
+  <div *ngIf="!auth.authenticated.datasets?.length">
+    <p>Nothing to show. Upload new or Load existing dataset.</p>
+  </div>
+  <div class="dataset-card-wrapper">
+    <div *ngFor="let dataset of auth.authenticated.datasets" class="dataset-card">
+      <mat-card>
+        <mat-card-header>
+          <button mat-button routerLink="/display/{{dataset.name}}" class="list-title">
+            <mat-icon color="primary">folder</mat-icon>
+            {{dataset.name}}
           </button>
-        </div>
-      </mat-card-content>
-    </mat-card>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="row-wrapper">
+            <div>Created At:</div>
+            <div>{{dataset.createdAt | date: "medium"}}</div>
+          </div>
+          <div class="row-wrapper">
+            <div>Updated At:</div>
+            <div>{{dataset.updatedAt | date: "medium"}}</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
 </div>
 

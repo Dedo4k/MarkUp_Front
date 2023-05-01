@@ -1,0 +1,20 @@
+<h1 matDialogTitle>New Role</h1>
+<div matDialogContent>
+  <form [formGroup]="createForm" (ngSubmit)="onSubmit(createForm.value)">
+    <div class="col-wrapper">
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput type="text" formControlName="name">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Operations</mat-label>
+        <mat-select formControlName="operations" multiple>
+          <mat-option *ngFor="let operation of data" [value]="operation.id">{{operation.id}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div>
+      <button type="submit" mat-button [disabled]="createForm.invalid">Create</button>
+    </div>
+  </form>
+</div>

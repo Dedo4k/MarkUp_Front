@@ -30,36 +30,52 @@ export class AuthService {
     }
   }
 
-  authenticate(credentials: Credentials, routeTo: string) {
+  authenticate(credentials: Credentials, routeTo: string, callback: Function | undefined) {
 
     let auth = 'Basic ' + btoa(credentials.username + ':' + credentials.password);
 
-    this.headers =  new HttpHeaders(credentials ? {
-        authorization: auth
-      } : {});
+    this.getAuth(auth, routeTo, callback);
+  }
+
+  auth(routeTo: string, callback: Function | undefined) {
+    let auth = localStorage.getItem("currentAuth");
+    if (!auth) {
+      this.openLoginDialog(routeTo, callback);
+    } else {
+      this.getAuth(auth, routeTo, callback);
+    }
+  }
+
+  getAuth(auth: string, routeTo: string, callback: Function | undefined) {
+    this.headers =  new HttpHeaders( {
+      authorization: auth
+    });
 
     this.http.get<User>('/api/v2/auth', {headers: this.headers}).subscribe(response => {
       if (response) {
         this.authenticated = response;
         localStorage.setItem("currentUser", JSON.stringify(response));
         localStorage.setItem("currentAuth", auth);
+        if (callback) {
+          callback();
+        }
         this.router.navigateByUrl(routeTo);
       }
     });
   }
 
-  openLoginDialog(routeTo: string): void {
-    let loginDialog = this.dialog.open(LoginComponent);
+  openLoginDialog(routeTo: string, callback: Function | undefined): void {
+    let loginDialog = this.dialog.open(LoginComponent, { disableClose: true });
 
     loginDialog.afterClosed().subscribe(result => {
       if (this.helper.isNotEmpty(result)) {
-        this.handleLoginRequest(result, routeTo);
+        this.handleLoginRequest(result, routeTo, callback);
       }
     })
   }
 
-  handleLoginRequest(credentials: Credentials, routeTo: string) {
-    this.authenticate(credentials, routeTo);
+  handleLoginRequest(credentials: Credentials, routeTo: string, callback: Function | undefined) {
+    this.authenticate(credentials, routeTo, callback);
   }
 
   handleLogoutRequest(routeTo: string): void {

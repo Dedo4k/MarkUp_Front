@@ -32,6 +32,10 @@ import { ModeratorCreateComponent } from './components/moderators/moderator-crea
 import {MatSelectModule} from "@angular/material/select";
 import { ModeratorEditComponent } from './components/moderators/moderator-edit/moderator-edit.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
+import { RolesComponent } from './components/roles/roles.component';
+import { RoleCreateComponent } from './components/roles/role-create/role-create.component';
+import {MatExpansionModule} from "@angular/material/expansion";
+import { RoleEditComponent } from './components/roles/role-edit/role-edit.component';
 
 @Injectable()
 export class XhrInterceptor implements HttpInterceptor {
@@ -57,29 +61,33 @@ export class XhrInterceptor implements HttpInterceptor {
     DatasetSelectComponent,
     ModeratorCreateComponent,
     ModeratorEditComponent,
+    RolesComponent,
+    RoleCreateComponent,
+    RoleEditComponent,
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatToolbarModule,
-        MatIconModule,
-        MatButtonModule,
-        MatSidenavModule,
-        HttpClientModule,
-        MatListModule,
-        MatDialogModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatMenuModule,
-        MatCardModule,
-        MatProgressBarModule,
-        MatProgressSpinnerModule,
-        MatOptionModule,
-        MatTooltipModule,
-        MatSelectModule,
-        MatCheckboxModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSidenavModule,
+    HttpClientModule,
+    MatListModule,
+    MatDialogModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatMenuModule,
+    MatCardModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatOptionModule,
+    MatTooltipModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatExpansionModule
+  ],
   providers: [AuthService, {provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true}],
   bootstrap: [AppComponent]
 })

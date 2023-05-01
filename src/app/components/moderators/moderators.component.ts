@@ -17,9 +17,7 @@ export class ModeratorsComponent {
               private dialog: MatDialog,
               private rolesService: RolesService,
               private moderatorsService: ModeratorsService) {
-    if (!authService.isAuthenticated()) {
-      authService.openLoginDialog("/moderators");
-    }
+    authService.auth("/moderators", undefined);
   }
 
   get auth() {
@@ -47,7 +45,7 @@ export class ModeratorsComponent {
   }
 
   deleteModerator(id: number) {
-    if (confirm("Are you really want to delete moderator with id: " + id)) {
+    if (confirm("Are you really want to delete the moderator with id: " + id)) {
       this.moderatorsService.deleteModerator(id)
         .subscribe(res => {
           this.auth.moderators.splice(this.auth.moderators.findIndex(m => m.id === id), 1);
@@ -67,12 +65,14 @@ export class ModeratorsComponent {
       });
 
       updateModeratorDialog.afterClosed().subscribe(res => {
-        this.moderatorsService.updateModerator(id, res)
-          .subscribe(res => {
-            this.auth.moderators.splice(this.auth.moderators.findIndex(m => m.id === id), 1);
-            this.auth.moderators.push(res);
-            localStorage.setItem("currentUser", JSON.stringify(this.auth));
-          })
+        if (res) {
+          this.moderatorsService.updateModerator(id, res)
+            .subscribe(res => {
+              this.auth.moderators.splice(this.auth.moderators.findIndex(m => m.id === id), 1);
+              this.auth.moderators.push(res);
+              localStorage.setItem("currentUser", JSON.stringify(this.auth));
+            })
+        }
       })
     })
   }

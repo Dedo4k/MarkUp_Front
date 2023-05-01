@@ -39,13 +39,11 @@ export class DisplayComponent implements OnInit {
               private route: ActivatedRoute,
               private dialog: MatDialog,
               private authService: AuthService) {
-    if (!authService.isAuthenticated()) {
-      authService.openLoginDialog('/datasets');
-    }
     route.paramMap.subscribe(params => {
       let name = params.get("datasetName");
       if (name != null) {
-        storage.downloadDataset(name, () => this.displayCurrentData());
+        authService.auth('/display/'+ name,
+          (datasetName = name!) => storage.downloadDataset(datasetName, () => this.displayCurrentData()));
       }
     })
   }
