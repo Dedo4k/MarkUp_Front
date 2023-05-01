@@ -25,8 +25,4 @@ export class HeaderComponent {
   get authenticatedUser(): User {
     return this.authService.authenticated;
   }
-
-  hasRole(role: string): boolean {
-    return this.authenticatedUser.roles?.some(value => value.id == role);
-  }
 }

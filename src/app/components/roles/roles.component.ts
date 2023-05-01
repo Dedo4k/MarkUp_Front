@@ -17,7 +17,7 @@ export class RolesComponent {
   operations: Operation[] = [];
   loading = false;
 
-  constructor(private authService: AuthService,
+  constructor(public authService: AuthService,
               private dialog: MatDialog,
               private roleService: RolesService) {
     authService.auth("/roles", () => {
@@ -35,7 +35,9 @@ export class RolesComponent {
       let createRoleDialog = this.dialog.open(RoleCreateComponent, {data: res});
 
       createRoleDialog.afterClosed().subscribe(res => {
-        this.roleService.createRole(res).subscribe(res => this.roles.push(res));
+        if (res) {
+          this.roleService.createRole(res).subscribe(res => this.roles.push(res));
+        }
       })
     })
   }
@@ -50,10 +52,12 @@ export class RolesComponent {
       });
 
       editRoleDialog.afterClosed().subscribe(res => {
-        this.roleService.editRole(id, res).subscribe(res => {
-          this.roles.splice(this.roles.findIndex(role => role.id === res.id), 1);
-          this.roles.push(res);
-        });
+        if (res) {
+          this.roleService.editRole(id, res).subscribe(res => {
+            this.roles.splice(this.roles.findIndex(role => role.id === res.id), 1);
+            this.roles.push(res);
+          });
+        }
       })
     })
   }

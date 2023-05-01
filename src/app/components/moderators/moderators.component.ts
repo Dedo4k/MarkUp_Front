@@ -13,7 +13,7 @@ import {ModeratorEditComponent} from "./moderator-edit/moderator-edit.component"
 })
 export class ModeratorsComponent {
 
-  constructor(private authService: AuthService,
+  constructor(public authService: AuthService,
               private dialog: MatDialog,
               private rolesService: RolesService,
               private moderatorsService: ModeratorsService) {
@@ -35,11 +35,13 @@ export class ModeratorsComponent {
         });
 
         createModeratorDialog.afterClosed().subscribe(res => {
-          this.moderatorsService.createModerator(res)
-            .subscribe(res => {
-              this.auth.moderators.push(res);
-              localStorage.setItem("currentUser", JSON.stringify(this.auth));
-            })
+          if (res) {
+            this.moderatorsService.createModerator(res)
+              .subscribe(res => {
+                this.auth.moderators.push(res);
+                localStorage.setItem("currentUser", JSON.stringify(this.auth));
+              })
+          }
         });
       });
   }

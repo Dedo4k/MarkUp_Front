@@ -93,4 +93,12 @@ export class AuthService {
   isAuthenticated(): boolean {
     return this.helper.isNotEmpty(this.authenticated);
   }
+
+  hasRole(role: string): boolean {
+    return this.authenticated.roles?.some(value => value.id == role);
+  }
+
+  hasOperation(operation: string): boolean {
+    return this.authenticated.roles?.flatMap(role => role.operations).some(value => value.id == operation);
+  }
 }
