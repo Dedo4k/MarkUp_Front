@@ -5,9 +5,9 @@
         <span>MarkUp</span>
       </h3>
       <button mat-button routerLink="/datasets" class="header-btn">Datasets</button>
-      <button *ngIf="auth.hasOperation('OP_MODERATOR_SHOW')" mat-button routerLink="/moderators" class="header-btn">Moderators
+      <button *ngIf="auth.hasOperation('OP_MODERATOR_READ')" mat-button routerLink="/moderators" class="header-btn">Moderators
       </button>
-      <button *ngIf="auth.hasOperation('OP_ROLE_SHOW')" mat-button routerLink="/roles" class="header-btn">Roles</button>
+      <button *ngIf="auth.hasOperation('OP_ROLE_READ')" mat-button routerLink="/roles" class="header-btn">Roles</button>
 
       <span class="example-spacer"></span>
 

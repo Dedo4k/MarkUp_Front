@@ -1,7 +1,7 @@
 <div class="content-wrapper">
   <mat-toolbar>
     <button *ngIf="auth.hasOperation('OP_DATASET_CREATE')" mat-raised-button color="primary" class="toolbar-btn" (click)="file_input.click()">Load New</button>
-    <button *ngIf="auth.hasOperation('OP_DATASET_LOAD')" mat-raised-button color="primary" class="toolbar-btn" (click)="openLoadExistingDialog()">Load Existing
+    <button *ngIf="auth.hasOperation('OP_DATASET_CREATE')" mat-raised-button color="primary" class="toolbar-btn" (click)="openLoadExistingDialog()">Load Existing
     </button>
     <input hidden type="file" webkitdirectory (change)="handleFileSelect($event)" #file_input/>
   </mat-toolbar>

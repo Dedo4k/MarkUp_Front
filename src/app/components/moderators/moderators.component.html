@@ -1,6 +1,6 @@
 <div class="content-wrapper">
   <mat-toolbar>
-    <button *ngIf="authService.hasOperation('OP_USER_CREATE')" mat-raised-button color="primary" class="toolbar-btn" (click)="openModeratorCreateDialog()">New Moderator
+    <button *ngIf="authService.hasOperation('OP_MODERATOR_CREATE')" mat-raised-button color="primary" class="toolbar-btn" (click)="openModeratorCreateDialog()">New Moderator
     </button>
   </mat-toolbar>
   <div *ngIf="!auth.moderators?.length">
@@ -47,9 +47,9 @@
           </mat-accordion>
         </mat-card-content>
         <mat-card-actions>
-          <button *ngIf="authService.hasOperation('OP_USER_DELETE')" mat-raised-button color="primary" class="card-btn" (click)="deleteModerator(moderator.id)">Delete
+          <button *ngIf="authService.hasOperation('OP_MODERATOR_DELETE')" mat-raised-button color="primary" class="card-btn" (click)="deleteModerator(moderator.id)">Delete
           </button>
-          <button *ngIf="authService.hasOperation('OP_USER_UPDATE')" mat-raised-button color="primary" class="card-btn" (click)="editModerator(moderator.id)">Edit</button>
+          <button *ngIf="authService.hasOperation('OP_MODERATOR_UPDATE')" mat-raised-button color="primary" class="card-btn" (click)="editModerator(moderator.id)">Edit</button>
         </mat-card-actions>
       </mat-card>
     </div>

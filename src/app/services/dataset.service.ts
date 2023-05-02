@@ -58,10 +58,6 @@ export class DatasetService {
   }
 
   loadDatasets(datasets: string[]): Observable<Dataset[]> {
-    let httpParams = new HttpParams().set("datasetNames", datasets.toString());
-    return this.http.get<Dataset[]>(this.apiUrl + "/load", {
-      headers: this.authService.headers,
-      params: httpParams
-    });
+    return this.http.put<Dataset[]>(this.apiUrl + "/load", datasets, {headers: this.authService.headers});
   }
 }

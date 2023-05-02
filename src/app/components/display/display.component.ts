@@ -176,6 +176,7 @@ export class DisplayComponent implements OnInit {
             text.destroy();
             layout.destroy();
             this.layoutTransformer?.destroy();
+            this.tooltipLayer?.removeChildren();
             this.labels.delete(layout as Konva.Rect);
             this.changes = true;
           });
