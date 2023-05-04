@@ -29,7 +29,7 @@ export class DatasetsComponent {
       let datasetSelectDialog = this.dialog.open(DatasetSelectComponent, {data: res});
 
       datasetSelectDialog.afterClosed().subscribe(result => {
-        if (result.datasets?.length) {
+        if (result && result.datasets?.length) {
           this.datasetService.loadDatasets(result.datasets)
             .subscribe(res => {
               this.datasets = res;

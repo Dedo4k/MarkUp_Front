@@ -200,6 +200,7 @@ export class DisplayComponent implements OnInit {
         width: image.width,
         height: image.height
       });
+      this.storage.current().openedAt = new Date().toISOString();
       this.stage?.setSize({width: image.width, height: image.height});
       this.imageLayer?.destroyChildren();
       this.imageLayer?.add(dataImage);

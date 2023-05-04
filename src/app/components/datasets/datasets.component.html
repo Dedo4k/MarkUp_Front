@@ -26,6 +26,11 @@
             <div>Updated At:</div>
             <div>{{dataset.updatedAt | date: "medium"}}</div>
           </div>
+          <div>Moderating Log</div>
+          <div *ngFor="let statistics of dataset.datasetStatistics">
+            <div>{{statistics.userId}} - {{statistics.moderatingTime}}</div>
+          </div>
+          <div>Users with access: {{dataset.userIds.length}}</div>
         </mat-card-content>
       </mat-card>
     </div>

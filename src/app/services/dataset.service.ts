@@ -52,6 +52,8 @@ export class DatasetService {
     let file = new File([blob], data.layoutName);
     let formData = new FormData();
     formData.append("file", file);
+    formData.append("openedAt", data.openedAt);
+    formData.append("sendAt", new Date().toISOString());
 
     return this.http.post<Data>(this.apiUrl + "/" + data.datasetName + "/" + data.dataName, formData,
       {headers: this.authService.headers});

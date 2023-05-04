@@ -18,4 +18,5 @@ export interface Data {
   layoutType: string;
   layoutName: string;
   layout: Layout;
+  openedAt: string;
 }
