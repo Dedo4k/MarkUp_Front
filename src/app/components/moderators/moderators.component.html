@@ -44,6 +44,31 @@
                 </div>
               </div>
             </mat-expansion-panel>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Statistics</mat-panel-title>
+              </mat-expansion-panel-header>
+              <div *ngFor="let statistic of moderator.userStatistics">
+                <mat-divider></mat-divider>
+                <p>{{statistic.date}}</p>
+                <div class="row-wrapper">
+                  <div>Total time worked:</div>
+                  <div>{{statistic.totalTimeWorked}}</div>
+                </div>
+                <div class="row-wrapper">
+                  <div>Last Update At:</div>
+                  <div>{{statistic.lastUpdateAt | date:"medium"}}</div>
+                </div>
+                <div class="row-wrapper">
+                  <div>Files updated:</div>
+                  <div>{{statistic.filesChecked}}</div>
+                </div>
+                <div class="row-wrapper">
+                  <div>Objects changed:</div>
+                  <div>{{statistic.objectsChanged}}</div>
+                </div>
+              </div>
+            </mat-expansion-panel>
           </mat-accordion>
         </mat-card-content>
         <mat-card-actions>

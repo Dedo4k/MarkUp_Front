@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Credentials} from "../models/credentials";
-import {User} from "../models/user";
+import {Moderator, User} from "../models/user";
 import {HelperService} from "./helper.service";
 import {LoginComponent} from "../components/login/login.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -101,5 +101,9 @@ export class AuthService {
 
   hasOperation(operation: string): boolean {
     return this.authenticated.roles?.flatMap(role => role.operations).some(value => value.id == operation);
+  }
+
+  getModeratorById(id: number): Moderator | undefined {
+    return this.authenticated.moderators?.find(m => m.id == id);
   }
 }

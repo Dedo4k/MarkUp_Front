@@ -1,6 +1,7 @@
 import {Dataset} from "./dataset";
 
 export interface User {
+  id: number;
   username: string;
   roles: Role[];
   expired: boolean;
@@ -9,6 +10,7 @@ export interface User {
   enabled: boolean;
   datasets: Dataset[];
   moderators: Moderator[];
+  userStatistics: UserStatistic[];
 }
 
 export interface Role {
@@ -25,6 +27,7 @@ export interface Moderator {
   username: string;
   roles: Role[];
   datasets: Dataset[];
+  userStatistics: UserStatistic[];
 }
 
 export interface CreateUserDto {
@@ -48,4 +51,13 @@ export interface CreateRoleDto {
 
 export interface EditRoleDto {
   operations: string[];
+}
+
+export interface UserStatistic {
+  userId: number;
+  date: string;
+  lastUpdateAt: string;
+  totalTimeWorked: string;
+  filesChecked: number;
+  objectsChanged: number;
 }

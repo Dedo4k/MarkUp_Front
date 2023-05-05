@@ -26,11 +26,12 @@
             <div>Updated At:</div>
             <div>{{dataset.updatedAt | date: "medium"}}</div>
           </div>
-          <div>Moderating Log</div>
-          <div *ngFor="let statistics of dataset.datasetStatistics">
-            <div>{{statistics.userId}} - {{statistics.moderatingTime}}</div>
-          </div>
           <div>Users with access: {{dataset.userIds.length}}</div>
+          <div>Moderating Log</div>
+          <div *ngFor="let statistic of dataset.datasetStatistics">
+            <div *ngIf="statistic.userId === auth.authenticated.id">You - {{statistic.moderatingTime}}</div>
+            <div *ngIf="auth.getModeratorById(statistic.userId); let m">{{m.username}} - {{statistic.moderatingTime}}</div>
+          </div>
         </mat-card-content>
       </mat-card>
     </div>
