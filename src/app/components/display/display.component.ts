@@ -39,13 +39,11 @@ export class DisplayComponent implements OnInit {
               private route: ActivatedRoute,
               private dialog: MatDialog,
               private authService: AuthService) {
-    if (!authService.isAuthenticated()) {
-      authService.openLoginDialog('/datasets');
-    }
     route.paramMap.subscribe(params => {
       let name = params.get("datasetName");
       if (name != null) {
-        storage.downloadDataset(name, () => this.displayCurrentData());
+        authService.auth('/display/'+ name,
+          (datasetName = name!) => storage.downloadDataset(datasetName, () => this.displayCurrentData()));
       }
     })
   }
@@ -178,6 +176,7 @@ export class DisplayComponent implements OnInit {
             text.destroy();
             layout.destroy();
             this.layoutTransformer?.destroy();
+            this.tooltipLayer?.removeChildren();
             this.labels.delete(layout as Konva.Rect);
             this.changes = true;
           });
@@ -201,6 +200,7 @@ export class DisplayComponent implements OnInit {
         width: image.width,
         height: image.height
       });
+      this.storage.current().openedAt = new Date().toISOString();
       this.stage?.setSize({width: image.width, height: image.height});
       this.imageLayer?.destroyChildren();
       this.imageLayer?.add(dataImage);

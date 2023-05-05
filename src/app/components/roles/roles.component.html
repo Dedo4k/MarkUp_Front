@@ -1,0 +1,25 @@
+<div class="content-wrapper">
+  <mat-toolbar>
+    <button *ngIf="authService.hasOperation('OP_ROLE_CREATE')" mat-raised-button color="primary" class="toolbar-btn" (click)="openCreateRoleDialog()">New Role</button>
+  </mat-toolbar>
+  <div class="roles-wrapper">
+    <div *ngIf="!roles?.length">
+      <p>Nothing to show. Create new Role.</p>
+    </div>
+    <mat-spinner *ngIf="loading" mode="indeterminate"></mat-spinner>
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let role of roles">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{role.id}}</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div *ngFor="let operation of role.operations">
+          <p>{{operation.id}}</p>
+        </div>
+        <button *ngIf="authService.hasOperation('OP_ROLE_DELETE')" mat-raised-button color="primary" class="card-btn" (click)="deleteRole(role.id)">Delete</button>
+        <button *ngIf="authService.hasOperation('OP_ROLE_UPDATE')" mat-raised-button color="primary" class="card-btn" (click)="openEditRoleDialog(role.id)">Edit</button>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>
+
+<app-footer></app-footer>

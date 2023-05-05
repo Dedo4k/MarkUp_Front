@@ -5,12 +5,14 @@
         <span>MarkUp</span>
       </h3>
       <button mat-button routerLink="/datasets" class="header-btn">Datasets</button>
-      <button *ngIf="hasRole('ROLE_ADMIN')" mat-button routerLink="/moderators" class="header-btn">Moderators</button>
+      <button *ngIf="auth.hasOperation('OP_MODERATOR_READ')" mat-button routerLink="/moderators" class="header-btn">Moderators
+      </button>
+      <button *ngIf="auth.hasOperation('OP_ROLE_READ')" mat-button routerLink="/roles" class="header-btn">Roles</button>
 
       <span class="example-spacer"></span>
 
       <button *ngIf="!isAuthenticated" mat-button class="header-btn"
-              (click)="auth.openLoginDialog('/')">
+              (click)="auth.openLoginDialog('/', undefined)">
         <mat-icon>login</mat-icon>
         Sign In
       </button>

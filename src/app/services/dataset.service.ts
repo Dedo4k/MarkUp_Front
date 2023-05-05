@@ -52,16 +52,14 @@ export class DatasetService {
     let file = new File([blob], data.layoutName);
     let formData = new FormData();
     formData.append("file", file);
+    formData.append("openedAt", data.openedAt);
+    formData.append("sendAt", new Date().toISOString());
 
     return this.http.post<Data>(this.apiUrl + "/" + data.datasetName + "/" + data.dataName, formData,
       {headers: this.authService.headers});
   }
 
   loadDatasets(datasets: string[]): Observable<Dataset[]> {
-    let httpParams = new HttpParams().set("datasetNames", datasets.toString());
-    return this.http.get<Dataset[]>(this.apiUrl + "/load", {
-      headers: this.authService.headers,
-      params: httpParams
-    });
+    return this.http.put<Dataset[]>(this.apiUrl + "/load", datasets, {headers: this.authService.headers});
   }
 }
