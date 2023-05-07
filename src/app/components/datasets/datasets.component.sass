@@ -9,8 +9,15 @@
 .dataset-card-wrapper
   margin-top: 10px
   display:  grid
-  grid-template-columns: repeat(3, 1fr)
+  grid-template-columns: repeat(auto-fill, 520px)
+  grid-row-gap: 10px
 
 .dataset-card
+  display: flex
+  flex-direction: column
   width: 500px
-  height: 400px
+
+.dataset-card-content
+  flex-grow: 1
+  height: 150px
+  overflow: auto

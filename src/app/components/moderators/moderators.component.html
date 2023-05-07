@@ -12,7 +12,7 @@
         <mat-card-header>
           <mat-card-title>{{moderator.username}}</mat-card-title>
         </mat-card-header>
-        <mat-card-content class="moderator-card-content">
+        <mat-card-content class="moderator-card-content scroll">
           <mat-accordion>
             <mat-expansion-panel>
               <mat-expansion-panel-header>
@@ -36,11 +36,11 @@
                 <p>{{dataset.name}}</p>
                 <div class="row-wrapper">
                   <div>Created At:</div>
-                  <div>{{dataset.createdAt | date: "medium"}}</div>
+                  <div>{{dataset.createdAt | customDate}}</div>
                 </div>
                 <div class="row-wrapper">
                   <div>Updated At:</div>
-                  <div>{{dataset.updatedAt | date: "medium"}}</div>
+                  <div>{{dataset.updatedAt | customDate}}</div>
                 </div>
               </div>
             </mat-expansion-panel>
@@ -50,14 +50,14 @@
               </mat-expansion-panel-header>
               <div *ngFor="let statistic of moderator.userStatistics">
                 <mat-divider></mat-divider>
-                <p>{{statistic.date}}</p>
+                <p>{{statistic.date | customDate: "date"}}</p>
                 <div class="row-wrapper">
                   <div>Total time worked:</div>
-                  <div>{{statistic.totalTimeWorked}}</div>
+                  <div>{{statistic.totalTimeWorked | customDuration}}</div>
                 </div>
                 <div class="row-wrapper">
                   <div>Last Update At:</div>
-                  <div>{{statistic.lastUpdateAt | date:"medium"}}</div>
+                  <div>{{statistic.lastUpdateAt | customDate}}</div>
                 </div>
                 <div class="row-wrapper">
                   <div>Files updated:</div>

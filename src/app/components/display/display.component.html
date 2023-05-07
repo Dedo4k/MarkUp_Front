@@ -12,7 +12,7 @@
           {{storage.dataset.length}}/{{storage.maxSize}}
         </div>
       </mat-card-content>
-      <mat-card-content class="file-list-content">
+      <mat-card-content class="file-list-content scroll">
         <mat-selection-list multiple="false" hideSingleSelectionIndicator="true">
           <mat-list-option *ngFor="let name of storage.names"
                            [selected]="name == storage.names[storage.cursor]"
@@ -26,7 +26,7 @@
       <mat-card-header>
         <mat-card-title>Labels</mat-card-title>
       </mat-card-header>
-      <mat-card-content class="label-list-content">
+      <mat-card-content class="label-list-content scroll">
         <mat-selection-list #labelList multiple="false" hideSingleSelectionIndicator="true">
           <mat-list-option *ngFor="let label of labels | keyvalue" selected="false" [value]="label.key"
                            [style.background-color]="getColor(label.value.label)"
@@ -48,13 +48,17 @@
   </div>
   <div class="display-wrapper">
     <mat-card class="display-zone">
-      <mat-card-header *ngIf="storage.current()">
-        <mat-card-title>File: {{storage.current().imageName}}</mat-card-title>
-        <span class="display-toolbar-spacer"></span>
-        <button mat-raised-button color="primary" (click)="prev()">Prev</button>
-        <button mat-raised-button color="primary" (click)="next()">Next</button>
+      <mat-card-header *ngIf="storage.current()" class="display-header">
+        <div class="row-wrapper max-width">
+          <p>File: {{storage.current().imageName}}</p>
+          <span class="display-toolbar-spacer"></span>
+          <button mat-raised-button color="primary" class="display-btn" (click)="saveProgress()">Save progress</button>
+          <button mat-raised-button color="primary" class="display-btn" (click)="update()">Save, S</button>
+          <button mat-raised-button color="primary" class="display-btn" (click)="prev()">Prev, A</button>
+          <button mat-raised-button color="primary" class="display-btn" (click)="next()">Next, D</button>
+        </div>
       </mat-card-header>
-      <mat-card-content class="display-card-content">
+      <mat-card-content class="display-card-content scroll">
         <div *ngIf="!storage.dataset.length" class="display-spinner">
           <mat-spinner mode="indeterminate"></mat-spinner>
         </div>

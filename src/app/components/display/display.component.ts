@@ -42,7 +42,7 @@ export class DisplayComponent implements OnInit {
     route.paramMap.subscribe(params => {
       let name = params.get("datasetName");
       if (name != null) {
-        authService.auth('/display/'+ name,
+        authService.auth('/display/' + name,
           (datasetName = name!) => storage.downloadDataset(datasetName, () => this.displayCurrentData()));
       }
     })
@@ -164,23 +164,38 @@ export class DisplayComponent implements OnInit {
     container.focus();
 
     container.addEventListener("keydown", (e) => {
-      if (this.layoutTransformer?.nodes().length) {
-        if (e.code == "Delete") {
-          this.layoutTransformer?.nodes().forEach(layout => {
-            this.storage.current().layout.object = this.storage.current().layout.object
-              .filter(value => value.bndbox.xmin !== layout.x()
-                && value.bndbox.ymin !== layout.y()
-                && value.bndbox.xmax !== layout.x() + layout.width()
-                && value.bndbox.ymax !== layout.y() + layout.height());
-            let text = this.labels.get(layout as Konva.Rect).text;
-            text.destroy();
-            layout.destroy();
+      switch (e.code) {
+        case "Delete": {
+          if (this.layoutTransformer?.nodes().length) {
+            this.layoutTransformer?.nodes().forEach(layout => {
+              this.storage.current().layout.object = this.storage.current().layout.object
+                .filter(value => value.bndbox.xmin !== layout.x()
+                  && value.bndbox.ymin !== layout.y()
+                  && value.bndbox.xmax !== layout.x() + layout.width()
+                  && value.bndbox.ymax !== layout.y() + layout.height());
+              let text = this.labels.get(layout as Konva.Rect)?.text;
+              text?.destroy();
+              layout.destroy();
+              this.layoutTransformer?.destroy();
+              this.tooltipLayer?.removeChildren();
+              this.labels.delete(layout as Konva.Rect);
+              this.changes = true;
+            });
             this.layoutTransformer?.destroy();
-            this.tooltipLayer?.removeChildren();
-            this.labels.delete(layout as Konva.Rect);
-            this.changes = true;
-          });
-          this.layoutTransformer?.destroy();
+          }
+          break;
+        }
+        case "KeyD": {
+          this.next();
+          break;
+        }
+        case "KeyA": {
+          this.prev();
+          break;
+        }
+        case "KeyS": {
+          this.update();
+          break;
         }
       }
     });
@@ -285,24 +300,28 @@ export class DisplayComponent implements OnInit {
   }
 
   prev() {
-    if (this.changes) {
-      this.storage.updateData(this.storage.current());
-    }
+    this.update();
     this.storage.prev(() => this.displayCurrentData());
   }
 
   next() {
-    if (this.changes) {
-      this.storage.updateData(this.storage.current());
-    }
+    this.update();
     this.storage.next(() => this.displayCurrentData());
   }
 
   goToData(dataName: string) {
+    this.update();
+    this.storage.goToData(dataName, () => this.displayCurrentData());
+  }
+
+  update() {
     if (this.changes) {
       this.storage.updateData(this.storage.current());
     }
-    this.storage.goToData(dataName, () => this.displayCurrentData());
+  }
+
+  saveProgress() {
+    localStorage.setItem(this.storage.datasetName, this.storage.cursor.toString());
   }
 
   selectLabel(rect: Konva.Rect) {

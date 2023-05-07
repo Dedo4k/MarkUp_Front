@@ -1,4 +1,4 @@
-import {Injectable, NgModule} from '@angular/core';
+import {ErrorHandler, Injectable, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
@@ -27,15 +27,19 @@ import {LabelSelectComponent} from './components/display/label-select/label-sele
 import {MatOptionModule} from "@angular/material/core";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {ModeratorsComponent} from './components/moderators/moderators.component';
-import { DatasetSelectComponent } from './components/datasets/dataset-select/dataset-select.component';
-import { ModeratorCreateComponent } from './components/moderators/moderator-create/moderator-create.component';
+import {DatasetSelectComponent} from './components/datasets/dataset-select/dataset-select.component';
+import {ModeratorCreateComponent} from './components/moderators/moderator-create/moderator-create.component';
 import {MatSelectModule} from "@angular/material/select";
-import { ModeratorEditComponent } from './components/moderators/moderator-edit/moderator-edit.component';
+import {ModeratorEditComponent} from './components/moderators/moderator-edit/moderator-edit.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
-import { RolesComponent } from './components/roles/roles.component';
-import { RoleCreateComponent } from './components/roles/role-create/role-create.component';
+import {RolesComponent} from './components/roles/roles.component';
+import {RoleCreateComponent} from './components/roles/role-create/role-create.component';
 import {MatExpansionModule} from "@angular/material/expansion";
-import { RoleEditComponent } from './components/roles/role-edit/role-edit.component';
+import {RoleEditComponent} from './components/roles/role-edit/role-edit.component';
+import {ErrorHandlerService} from "./services/error-handler.service";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import { CustomDatePipe } from './pipes/custom-date.pipe';
+import { CustomDurationPipe } from './pipes/custom-duration.pipe';
 
 @Injectable()
 export class XhrInterceptor implements HttpInterceptor {
@@ -64,6 +68,8 @@ export class XhrInterceptor implements HttpInterceptor {
     RolesComponent,
     RoleCreateComponent,
     RoleEditComponent,
+    CustomDatePipe,
+    CustomDurationPipe,
   ],
   imports: [
     BrowserModule,
@@ -88,7 +94,10 @@ export class XhrInterceptor implements HttpInterceptor {
     MatCheckboxModule,
     MatExpansionModule
   ],
-  providers: [AuthService, {provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true}],
+  providers: [AuthService,
+    MatSnackBar,
+    {provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true},
+    {provide: ErrorHandler, useClass: ErrorHandlerService}],
   bootstrap: [AppComponent]
 })
 export class AppModule {
