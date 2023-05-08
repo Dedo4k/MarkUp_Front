@@ -4,6 +4,7 @@ import {Dataset} from "../../models/dataset";
 import {AuthService} from "../../services/auth.service";
 import {MatDialog} from "@angular/material/dialog";
 import {DatasetSelectComponent} from "./dataset-select/dataset-select.component";
+import {DatasetUploaderService} from "../../services/dataset-uploader.service";
 
 @Component({
   selector: 'app-datasets',
@@ -16,7 +17,8 @@ export class DatasetsComponent {
 
   constructor(private datasetService: DatasetService,
               private authService: AuthService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              public datasetUploader: DatasetUploaderService) {
     authService.auth('/datasets', undefined);
   }
 
@@ -42,7 +44,13 @@ export class DatasetsComponent {
   }
 
   handleFileSelect(event: Event) {
-    // @ts-ignore
-    console.log(event.target.files);
+    let files = (event.target as HTMLInputElement).files;
+    if (files && files.length) {
+      this.datasetUploader.uploadDataset(files);
+    }
+  }
+
+  countDatasetTime(dataset: Dataset) {
+    return dataset.datasetStatistics.map(dataset => dataset.moderatingTime).reduce((a, b) => a + b);
   }
 }

@@ -6,6 +6,10 @@
     <button *ngIf="auth.hasOperation('OP_DATASET_CREATE')" mat-raised-button color="primary" class="toolbar-btn"
             (click)="openLoadExistingDialog()">Load Existing
     </button>
+    <div *ngIf="datasetUploader.uploading">
+      <p>Uploading... {{datasetUploader.uploaded}}/{{datasetUploader.files?.length}}</p>
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
     <input hidden type="file" webkitdirectory (change)="handleFileSelect($event)" #file_input/>
   </mat-toolbar>
   <div *ngIf="!auth.authenticated.datasets?.length">
@@ -31,6 +35,7 @@
               <div>{{dataset.updatedAt | customDate}}</div>
             </div>
             <div>Users with access: {{dataset.userIds.length}}</div>
+            <mat-divider></mat-divider>
             <div>Moderating Log</div>
             <div *ngFor="let statistic of dataset.datasetStatistics">
               <div *ngIf="statistic.userId === auth.authenticated.id" class="row-wrapper">
@@ -41,6 +46,11 @@
                 <div>{{m.username}}</div>
                 <div>{{statistic.moderatingTime | customDuration}}</div>
               </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="row-wrapper">
+              <div>Total Time:</div>
+              <div>{{countDatasetTime(dataset) | customDuration}}</div>
             </div>
           </div>
         </mat-card-content>

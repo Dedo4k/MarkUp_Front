@@ -252,6 +252,9 @@ export class DisplayComponent implements OnInit {
         scaleY: 1
       });
     });
+    rect.on("transformend", (e) => {
+      //TODO transform changes not saving
+    });
     rect.on("visibleChange", (e) => {
       if (!e.currentTarget.isVisible()) {
         if (this.layoutTransformer?.nodes().includes(e.currentTarget)) {
@@ -269,7 +272,7 @@ export class DisplayComponent implements OnInit {
     });
 
     this.layoutLayer?.add(rect, text);
-    this.labels.set(rect, {label: label, text: text});
+    this.labels.set(rect, {label: label, text: text, bndbox: bndbox});
     this.allLabels.add(label);
   }
 

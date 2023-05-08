@@ -1,6 +1,8 @@
 import {ErrorHandler, Injectable, NgZone} from '@angular/core';
 import {HttpErrorResponse} from "@angular/common/http";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {ErrorDto} from "../models/error-dto";
+import {ErrorComponent} from "../components/error/error.component";
 
 @Injectable({
   providedIn: 'root'
@@ -15,16 +17,17 @@ export class ErrorHandlerService implements ErrorHandler {
     switch (typeof error) {
       case "object":
         if (error as Object instanceof HttpErrorResponse) {
-          this.openSnackBar((error as HttpErrorResponse).message);
+          this.openSnackBar((error as HttpErrorResponse).error as ErrorDto);
         }
         break;
     }
     console.error(error);
   }
 
-  openSnackBar(message: string) {
-    this.zone.run(() => this.snackbar.open(message, "", {
-      duration: 3000,
+  openSnackBar(error: ErrorDto) {
+    this.zone.run(() => this.snackbar.openFromComponent(ErrorComponent, {
+      data: error,
+      duration: 5000,
       horizontalPosition: "center",
       verticalPosition: "top"
     }));

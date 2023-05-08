@@ -40,6 +40,7 @@ import {ErrorHandlerService} from "./services/error-handler.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import { CustomDatePipe } from './pipes/custom-date.pipe';
 import { CustomDurationPipe } from './pipes/custom-duration.pipe';
+import { ErrorComponent } from './components/error/error.component';
 
 @Injectable()
 export class XhrInterceptor implements HttpInterceptor {
@@ -70,6 +71,7 @@ export class XhrInterceptor implements HttpInterceptor {
     RoleEditComponent,
     CustomDatePipe,
     CustomDurationPipe,
+    ErrorComponent,
   ],
   imports: [
     BrowserModule,

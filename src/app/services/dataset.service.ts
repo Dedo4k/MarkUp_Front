@@ -62,4 +62,11 @@ export class DatasetService {
   loadDatasets(datasets: string[]): Observable<Dataset[]> {
     return this.http.put<Dataset[]>(this.apiUrl + "/load", datasets, {headers: this.authService.headers});
   }
+
+  uploadDataset(datasetName: string, file: File): Observable<boolean> {
+    let formData = new FormData();
+    formData.set("datasetName", datasetName);
+    formData.set("file", file);
+    return this.http.post<boolean>(this.apiUrl + "/upload", formData, {headers: this.authService.headers});
+  }
 }
