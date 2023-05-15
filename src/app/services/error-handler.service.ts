@@ -17,7 +17,17 @@ export class ErrorHandlerService implements ErrorHandler {
     switch (typeof error) {
       case "object":
         if (error as Object instanceof HttpErrorResponse) {
-          this.openSnackBar((error as HttpErrorResponse).error as ErrorDto);
+          let err = error as HttpErrorResponse;
+          if (err.error !== null) {
+            this.openSnackBar(err.error as ErrorDto);
+          } else {
+            this.openSnackBar({
+              "statusCode": err.status,
+              "message": err.statusText,
+              "description": err.message,
+              "dateTime": ""
+            } as ErrorDto);
+          }
         }
         break;
     }

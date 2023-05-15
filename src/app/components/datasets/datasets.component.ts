@@ -51,6 +51,12 @@ export class DatasetsComponent {
   }
 
   countDatasetTime(dataset: Dataset) {
-    return dataset.datasetStatistics.map(dataset => dataset.moderatingTime).reduce((a, b) => a + b);
+    let datasetStatistics = dataset.datasetStatistics.filter(dataset => this.auth.authenticated.moderators
+      .some(m => m.id === dataset.userId) || this.auth.authenticated.id === dataset.userId);
+    if (!datasetStatistics.length) {
+      return 0;
+    }
+    return datasetStatistics
+      .map(dataset => dataset.moderatingTime).reduce((a, b) => a + b);
   }
 }
