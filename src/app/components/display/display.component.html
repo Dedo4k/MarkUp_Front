@@ -51,6 +51,23 @@
       <mat-card-header *ngIf="storage.current()" class="display-header">
         <div class="row-wrapper max-width">
           <p>File: {{storage.current().imageName}}</p>
+          <div class="row-wrapper">
+            <button mat-mini-fab color="primary" class="display-btn" (click)="upScaling()">
+              <mat-icon>add</mat-icon>
+            </button>
+            <form class="row-wrapper">
+              <input type="number" matInput [formControl]="scaleControl" [matAutocomplete]="scales"
+                     value="{{scale * 100 | number}}" (ngModelChange)="valueScaling($event)" class="scales row-wrapper">
+              <mat-autocomplete #scales hideSingleSelectionIndicator="true">
+                <mat-option *ngFor="let sc of [50, 100, 150, 200]" [value]="sc">
+                  {{sc}}
+                </mat-option>
+              </mat-autocomplete>
+            </form>
+            <button mat-mini-fab color="primary" class="display-btn" (click)="downScaling()">
+              <mat-icon>remove</mat-icon>
+            </button>
+          </div>
           <span class="display-toolbar-spacer"></span>
           <button mat-raised-button color="primary" class="display-btn" (click)="saveProgress()">Save progress</button>
           <button mat-raised-button color="primary" class="display-btn" (click)="update()">Save, S</button>

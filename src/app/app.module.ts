@@ -42,6 +42,7 @@ import { CustomDatePipe } from './pipes/custom-date.pipe';
 import { CustomDurationPipe } from './pipes/custom-duration.pipe';
 import { ErrorComponent } from './components/error/error.component';
 import { MainComponent } from './components/main/main.component';
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
 
 @Injectable()
 export class XhrInterceptor implements HttpInterceptor {
@@ -75,29 +76,30 @@ export class XhrInterceptor implements HttpInterceptor {
     ErrorComponent,
     MainComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatSidenavModule,
-    HttpClientModule,
-    MatListModule,
-    MatDialogModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatMenuModule,
-    MatCardModule,
-    MatProgressBarModule,
-    MatProgressSpinnerModule,
-    MatOptionModule,
-    MatTooltipModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatExpansionModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatToolbarModule,
+        MatIconModule,
+        MatButtonModule,
+        MatSidenavModule,
+        HttpClientModule,
+        MatListModule,
+        MatDialogModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatMenuModule,
+        MatCardModule,
+        MatProgressBarModule,
+        MatProgressSpinnerModule,
+        MatOptionModule,
+        MatTooltipModule,
+        MatSelectModule,
+        MatCheckboxModule,
+        MatExpansionModule,
+        MatAutocompleteModule
+    ],
   providers: [AuthService,
     MatSnackBar,
     {provide: HTTP_INTERCEPTORS, useClass: XhrInterceptor, multi: true},

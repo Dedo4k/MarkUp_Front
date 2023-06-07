@@ -7,6 +7,8 @@ import {MatDialog} from "@angular/material/dialog";
 import {LabelSelectComponent} from "./label-select/label-select.component";
 import {MatSelectionList} from "@angular/material/list";
 import {AuthService} from "../../services/auth.service";
+import {FormControl} from "@angular/forms";
+import {MatAutocomplete} from "@angular/material/autocomplete";
 
 @Component({
   selector: 'app-display',
@@ -27,6 +29,11 @@ export class DisplayComponent implements OnInit {
   drawingRect: Konva.Rect | undefined;
   tooltip: Konva.Label | undefined;
   changes = false;
+  scale = 1;
+  scaleStep = 0.05;
+  imageW = 0;
+  imageH = 0;
+  scaleControl = new FormControl(this.scale * 100);
 
   colors = new Map();
   labels = new Map<Konva.Rect, any>();
@@ -92,10 +99,10 @@ export class DisplayComponent implements OnInit {
       this.y2 = this.stage?.getPointerPosition()?.y;
 
       this.drawingRect?.setAttrs({
-        x: Math.min(Number(this.x1), Number(this.x2)),
-        y: Math.min(Number(this.y1), Number(this.y2)),
-        width: Math.abs(Number(this.x1) - Number(this.x2)),
-        height: Math.abs(Number(this.y1) - Number(this.y2))
+        x: Math.min(Number(this.x1), Number(this.x2)) / this.stage?.scale()?.x!,
+        y: Math.min(Number(this.y1), Number(this.y2)) / this.stage?.scale()?.y!,
+        width: Math.abs(Number(this.x1) - Number(this.x2)) / this.stage?.scale()?.x!,
+        height: Math.abs(Number(this.y1) - Number(this.y2)) / this.stage?.scale()?.y!
       });
     });
 
@@ -199,6 +206,17 @@ export class DisplayComponent implements OnInit {
         }
       }
     });
+
+    container.addEventListener("wheel", (e) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        if (e.deltaY > 0) {
+          this.downScaling();
+        } else {
+          this.upScaling();
+        }
+      }
+    })
   }
 
   displayCurrentData() {
@@ -217,6 +235,8 @@ export class DisplayComponent implements OnInit {
       });
       this.storage.current().openedAt = new Date().toISOString();
       this.stage?.setSize({width: image.width, height: image.height});
+      this.imageW = image.width;
+      this.imageH = image.height;
       this.imageLayer?.destroyChildren();
       this.imageLayer?.add(dataImage);
     }
@@ -350,8 +370,8 @@ export class DisplayComponent implements OnInit {
 
     this.tooltip?.destroy();
     this.tooltip = new Konva.Label({
-      x: Number(pointerPosition?.x) + 5,
-      y: Number(pointerPosition?.y) + 5
+      x: Number(pointerPosition?.x) / this.stage?.scale()?.x! + 5,
+      y: Number(pointerPosition?.y) / this.stage?.scale()?.y! + 5
     });
     this.tooltip.add(new Konva.Tag({
       fill: "white",
@@ -381,5 +401,35 @@ export class DisplayComponent implements OnInit {
 
   openLabelDialog(labels: string[]) {
     return this.dialog.open(LabelSelectComponent, {data: this.allLabels});
+  }
+
+  upScaling() {
+    if (this.scale < 2) {
+      this.scale += this.scaleStep;
+      this.scaling();
+    }
+  }
+
+  valueScaling(value: number) {
+    let sc = value / 100;
+    if (sc >= 0.25 && sc <= 2) {
+      this.scale = sc;
+      this.scaling();
+    }
+  }
+
+  downScaling() {
+    if (this.scale > 0.25) {
+      this.scale -= this.scaleStep;
+      this.scaling();
+    }
+  }
+
+  scaling() {
+    this.stage?.scale({x: this.scale, y: this.scale});
+    this.stage?.setSize({
+      width: this.imageW * this.stage?.scale()?.x!,
+      height: this.imageH * this.stage?.scale()?.y!
+    });
   }
 }
