@@ -8,7 +8,6 @@ import {LabelSelectComponent} from "./label-select/label-select.component";
 import {MatSelectionList} from "@angular/material/list";
 import {AuthService} from "../../services/auth.service";
 import {FormControl} from "@angular/forms";
-import {MatAutocomplete} from "@angular/material/autocomplete";
 
 @Component({
   selector: 'app-display',
@@ -68,7 +67,7 @@ export class DisplayComponent implements OnInit {
     this.stage.add(this.layoutLayer);
     this.stage.add(this.tooltipLayer);
 
-    this.stage.on("mousedown touchstart", (e) => {
+    this.stage.on("mousedown touchstart", () => {
       if (this.layoutTransformer?.nodes().length) {
         return;
       }
@@ -106,13 +105,13 @@ export class DisplayComponent implements OnInit {
       });
     });
 
-    this.stage.on("mouseup touchend", (e) => {
+    this.stage.on("mouseup touchend", () => {
       if (this.layoutTransformer?.nodes().length) {
         return;
       }
 
       if (this.drawingRect?.height() != 0 && this.drawingRect?.width() != 0) {
-        this.openLabelDialog(this.storage.getLabels()).afterClosed().subscribe(result => {
+        this.openLabelDialog().afterClosed().subscribe(result => {
           if (result?.label.length && this.drawingRect) {
             let label = result.label instanceof Array ? result.label[0] : result.label;
             let obj = this.buildObject(this.drawingRect, label);
@@ -256,13 +255,13 @@ export class DisplayComponent implements OnInit {
       strokeWidth: 2,
       strokeScaleEnabled: false
     });
-    rect.on("mouseenter mousemove", (e) => {
+    rect.on("mouseenter mousemove", () => {
       this.showTooltip(label);
     });
-    rect.on("mouseleave", (e) => {
+    rect.on("mouseleave", () => {
       this.hideTooltip();
     });
-    rect.on("dragstart", (e) => {
+    rect.on("dragstart", () => {
       this.changes = true;
     });
     rect.on("transform", (e) => {
@@ -272,7 +271,7 @@ export class DisplayComponent implements OnInit {
         scaleY: 1
       });
     });
-    rect.on("transformend", (e) => {
+    rect.on("transformend", () => {
       //TODO transform changes not saving
     });
     rect.on("visibleChange", (e) => {
@@ -370,8 +369,8 @@ export class DisplayComponent implements OnInit {
 
     this.tooltip?.destroy();
     this.tooltip = new Konva.Label({
-      x: Number(pointerPosition?.x) / this.stage?.scale()?.x! + 5,
-      y: Number(pointerPosition?.y) / this.stage?.scale()?.y! + 5
+      x: Number(pointerPosition?.x) / this.stage?.scale()?.x! + 15 / this.stage?.scale()?.x!,
+      y: Number(pointerPosition?.y) / this.stage?.scale()?.y! - 10 / this.stage?.scale()?.y!
     });
     this.tooltip.add(new Konva.Tag({
       fill: "white",
@@ -380,7 +379,7 @@ export class DisplayComponent implements OnInit {
     }));
     let text = new Konva.Text({
       text: label,
-      fontSize: 20,
+      fontSize: 20 / this.stage?.scale()?.x!,
       fill: "black",
       padding: 3
     });
@@ -399,7 +398,7 @@ export class DisplayComponent implements OnInit {
     this.labelList?.deselectAll();
   }
 
-  openLabelDialog(labels: string[]) {
+  openLabelDialog() {
     return this.dialog.open(LabelSelectComponent, {data: this.allLabels});
   }
 

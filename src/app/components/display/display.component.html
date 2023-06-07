@@ -57,8 +57,8 @@
           <p>File: {{storage.current().imageName}}</p>
           <span class="display-toolbar-spacer"></span>
           <div class="row-wrapper">
-            <button mat-mini-fab color="primary" class="display-btn" (click)="upScaling()">
-              <mat-icon>add</mat-icon>
+            <button mat-mini-fab color="primary" class="display-btn" (click)="downScaling()">
+              <mat-icon>remove</mat-icon>
             </button>
             <form class="row-wrapper">
               <input type="number" matInput [formControl]="scaleControl" [matAutocomplete]="scales"
@@ -70,8 +70,8 @@
                 </mat-option>
               </mat-autocomplete>
             </form>
-            <button mat-mini-fab color="primary" class="display-btn" (click)="downScaling()">
-              <mat-icon>remove</mat-icon>
+            <button mat-mini-fab color="primary" class="display-btn" (click)="upScaling()">
+              <mat-icon>add</mat-icon>
             </button>
           </div>
           <span class="display-toolbar-spacer"></span>
