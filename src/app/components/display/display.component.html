@@ -12,12 +12,16 @@
           {{storage.dataset.length}}/{{storage.maxSize}}
         </div>
       </mat-card-content>
-      <mat-card-content class="file-list-content">
+      <mat-card-content class="file-list-content scroll">
         <mat-selection-list multiple="false" hideSingleSelectionIndicator="true">
           <mat-list-option *ngFor="let name of storage.names"
                            [selected]="name == storage.names[storage.cursor]"
                            (click)="goToData(name)">
-            <div matListItemTitle>{{name}}</div>
+            <div class="row-wrapper">
+              {{name}}
+<!--              <mat-icon *ngIf="storage.current().layout.$.verified" class="green">check</mat-icon>-->
+<!--              <mat-icon *ngIf="!storage.current().layout.$.verified" class="yellow">check</mat-icon>-->
+            </div>
           </mat-list-option>
         </mat-selection-list>
       </mat-card-content>
@@ -26,7 +30,7 @@
       <mat-card-header>
         <mat-card-title>Labels</mat-card-title>
       </mat-card-header>
-      <mat-card-content class="label-list-content">
+      <mat-card-content class="label-list-content scroll">
         <mat-selection-list #labelList multiple="false" hideSingleSelectionIndicator="true">
           <mat-list-option *ngFor="let label of labels | keyvalue" selected="false" [value]="label.key"
                            [style.background-color]="getColor(label.value.label)"
@@ -48,13 +52,36 @@
   </div>
   <div class="display-wrapper">
     <mat-card class="display-zone">
-      <mat-card-header *ngIf="storage.current()">
-        <mat-card-title>File: {{storage.current().imageName}}</mat-card-title>
-        <span class="display-toolbar-spacer"></span>
-        <button mat-raised-button color="primary" (click)="prev()">Prev</button>
-        <button mat-raised-button color="primary" (click)="next()">Next</button>
+      <mat-card-header *ngIf="storage.current()" class="display-header">
+        <div class="row-wrapper max-width">
+          <p>File: {{storage.current().imageName}}</p>
+          <span class="display-toolbar-spacer"></span>
+          <div class="row-wrapper">
+            <button mat-mini-fab color="primary" class="display-btn" (click)="downScaling()">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <form class="row-wrapper">
+              <input type="number" matInput [formControl]="scaleControl" [matAutocomplete]="scales"
+                     value="{{scale * 100 | number}}" (ngModelChange)="valueScaling($event)" class="scales row-wrapper display-btn">
+              <mat-icon class="display-btn">percent</mat-icon>
+              <mat-autocomplete #scales hideSingleSelectionIndicator="true">
+                <mat-option *ngFor="let sc of [50, 100, 150, 200]" [value]="sc">
+                  {{sc}}
+                </mat-option>
+              </mat-autocomplete>
+            </form>
+            <button mat-mini-fab color="primary" class="display-btn" (click)="upScaling()">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+          <span class="display-toolbar-spacer"></span>
+          <button mat-raised-button color="primary" class="display-btn" (click)="saveProgress()">Save progress</button>
+          <button mat-raised-button color="primary" class="display-btn" (click)="update()">Save, S</button>
+          <button mat-raised-button color="primary" class="display-btn" (click)="prev()">Prev, A</button>
+          <button mat-raised-button color="primary" class="display-btn" (click)="next()">Next, D</button>
+        </div>
       </mat-card-header>
-      <mat-card-content class="display-card-content">
+      <mat-card-content class="display-card-content scroll">
         <div *ngIf="!storage.dataset.length" class="display-spinner">
           <mat-spinner mode="indeterminate"></mat-spinner>
         </div>

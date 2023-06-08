@@ -1,8 +1,15 @@
 <div class="content-wrapper">
   <mat-toolbar>
-    <button *ngIf="auth.hasOperation('OP_DATASET_CREATE')" mat-raised-button color="primary" class="toolbar-btn" (click)="file_input.click()">Load New</button>
-    <button *ngIf="auth.hasOperation('OP_DATASET_CREATE')" mat-raised-button color="primary" class="toolbar-btn" (click)="openLoadExistingDialog()">Load Existing
+    <button *ngIf="auth.hasOperation('OP_DATASET_CREATE')" mat-raised-button color="primary" class="toolbar-btn"
+            (click)="file_input.click()">Load New
     </button>
+    <button *ngIf="auth.hasOperation('OP_DATASET_CREATE')" mat-raised-button color="primary" class="toolbar-btn"
+            (click)="openLoadExistingDialog()">Load Existing
+    </button>
+    <div *ngIf="datasetUploader.uploading">
+      <p>Uploading... {{datasetUploader.uploaded}}/{{datasetUploader.files?.length}}</p>
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
     <input hidden type="file" webkitdirectory (change)="handleFileSelect($event)" #file_input/>
   </mat-toolbar>
   <div *ngIf="!auth.authenticated.datasets?.length">
@@ -17,20 +24,34 @@
             {{dataset.name}}
           </button>
         </mat-card-header>
-        <mat-card-content>
-          <div class="row-wrapper">
-            <div>Created At:</div>
-            <div>{{dataset.createdAt | date: "medium"}}</div>
-          </div>
-          <div class="row-wrapper">
-            <div>Updated At:</div>
-            <div>{{dataset.updatedAt | date: "medium"}}</div>
-          </div>
-          <div>Users with access: {{dataset.userIds.length}}</div>
-          <div>Moderating Log</div>
-          <div *ngFor="let statistic of dataset.datasetStatistics">
-            <div *ngIf="statistic.userId === auth.authenticated.id">You - {{statistic.moderatingTime}}</div>
-            <div *ngIf="auth.getModeratorById(statistic.userId); let m">{{m.username}} - {{statistic.moderatingTime}}</div>
+        <mat-card-content class="dataset-card-content scroll">
+          <div class="max-height">
+            <div class="row-wrapper">
+              <div>Created At:</div>
+              <div>{{dataset.createdAt | customDate}}</div>
+            </div>
+            <div class="row-wrapper">
+              <div>Updated At:</div>
+              <div>{{dataset.updatedAt | customDate}}</div>
+            </div>
+            <div>Users with access: {{dataset.userIds.length}}</div>
+            <mat-divider></mat-divider>
+            <div>Moderating Log</div>
+            <div *ngFor="let statistic of dataset.datasetStatistics">
+              <div *ngIf="statistic.userId === auth.authenticated.id" class="row-wrapper">
+                <div>You</div>
+                <div>{{statistic.moderatingTime | customDuration}}</div>
+              </div>
+              <div *ngIf="auth.getModeratorById(statistic.userId); let m" class="row-wrapper">
+                <div>{{m.username}}</div>
+                <div>{{statistic.moderatingTime | customDuration}}</div>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="row-wrapper">
+              <div>Total Time:</div>
+              <div>{{countDatasetTime(dataset) | customDuration}}</div>
+            </div>
           </div>
         </mat-card-content>
       </mat-card>
@@ -38,4 +59,4 @@
   </div>
 </div>
 
-<app-footer></app-footer>
+<!--<app-footer></app-footer>-->

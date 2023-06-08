@@ -7,6 +7,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {LabelSelectComponent} from "./label-select/label-select.component";
 import {MatSelectionList} from "@angular/material/list";
 import {AuthService} from "../../services/auth.service";
+import {FormControl} from "@angular/forms";
 
 @Component({
   selector: 'app-display',
@@ -27,6 +28,11 @@ export class DisplayComponent implements OnInit {
   drawingRect: Konva.Rect | undefined;
   tooltip: Konva.Label | undefined;
   changes = false;
+  scale = 1;
+  scaleStep = 0.05;
+  imageW = 0;
+  imageH = 0;
+  scaleControl = new FormControl(this.scale * 100);
 
   colors = new Map();
   labels = new Map<Konva.Rect, any>();
@@ -42,7 +48,7 @@ export class DisplayComponent implements OnInit {
     route.paramMap.subscribe(params => {
       let name = params.get("datasetName");
       if (name != null) {
-        authService.auth('/display/'+ name,
+        authService.auth('/display/' + name,
           (datasetName = name!) => storage.downloadDataset(datasetName, () => this.displayCurrentData()));
       }
     })
@@ -61,7 +67,7 @@ export class DisplayComponent implements OnInit {
     this.stage.add(this.layoutLayer);
     this.stage.add(this.tooltipLayer);
 
-    this.stage.on("mousedown touchstart", (e) => {
+    this.stage.on("mousedown touchstart", () => {
       if (this.layoutTransformer?.nodes().length) {
         return;
       }
@@ -92,20 +98,20 @@ export class DisplayComponent implements OnInit {
       this.y2 = this.stage?.getPointerPosition()?.y;
 
       this.drawingRect?.setAttrs({
-        x: Math.min(Number(this.x1), Number(this.x2)),
-        y: Math.min(Number(this.y1), Number(this.y2)),
-        width: Math.abs(Number(this.x1) - Number(this.x2)),
-        height: Math.abs(Number(this.y1) - Number(this.y2))
+        x: Math.min(Number(this.x1), Number(this.x2)) / this.stage?.scale()?.x!,
+        y: Math.min(Number(this.y1), Number(this.y2)) / this.stage?.scale()?.y!,
+        width: Math.abs(Number(this.x1) - Number(this.x2)) / this.stage?.scale()?.x!,
+        height: Math.abs(Number(this.y1) - Number(this.y2)) / this.stage?.scale()?.y!
       });
     });
 
-    this.stage.on("mouseup touchend", (e) => {
+    this.stage.on("mouseup touchend", () => {
       if (this.layoutTransformer?.nodes().length) {
         return;
       }
 
       if (this.drawingRect?.height() != 0 && this.drawingRect?.width() != 0) {
-        this.openLabelDialog(this.storage.getLabels()).afterClosed().subscribe(result => {
+        this.openLabelDialog().afterClosed().subscribe(result => {
           if (result?.label.length && this.drawingRect) {
             let label = result.label instanceof Array ? result.label[0] : result.label;
             let obj = this.buildObject(this.drawingRect, label);
@@ -164,26 +170,52 @@ export class DisplayComponent implements OnInit {
     container.focus();
 
     container.addEventListener("keydown", (e) => {
-      if (this.layoutTransformer?.nodes().length) {
-        if (e.code == "Delete") {
-          this.layoutTransformer?.nodes().forEach(layout => {
-            this.storage.current().layout.object = this.storage.current().layout.object
-              .filter(value => value.bndbox.xmin !== layout.x()
-                && value.bndbox.ymin !== layout.y()
-                && value.bndbox.xmax !== layout.x() + layout.width()
-                && value.bndbox.ymax !== layout.y() + layout.height());
-            let text = this.labels.get(layout as Konva.Rect).text;
-            text.destroy();
-            layout.destroy();
+      switch (e.code) {
+        case "Delete": {
+          if (this.layoutTransformer?.nodes().length) {
+            this.layoutTransformer?.nodes().forEach(layout => {
+              this.storage.current().layout.object = this.storage.current().layout.object
+                .filter(value => value.bndbox.xmin !== layout.x()
+                  && value.bndbox.ymin !== layout.y()
+                  && value.bndbox.xmax !== layout.x() + layout.width()
+                  && value.bndbox.ymax !== layout.y() + layout.height());
+              let text = this.labels.get(layout as Konva.Rect)?.text;
+              text?.destroy();
+              layout.destroy();
+              this.layoutTransformer?.destroy();
+              this.tooltipLayer?.removeChildren();
+              this.labels.delete(layout as Konva.Rect);
+              this.changes = true;
+            });
             this.layoutTransformer?.destroy();
-            this.tooltipLayer?.removeChildren();
-            this.labels.delete(layout as Konva.Rect);
-            this.changes = true;
-          });
-          this.layoutTransformer?.destroy();
+          }
+          break;
+        }
+        case "KeyD": {
+          this.next();
+          break;
+        }
+        case "KeyA": {
+          this.prev();
+          break;
+        }
+        case "KeyS": {
+          this.update();
+          break;
         }
       }
     });
+
+    container.addEventListener("wheel", (e) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        if (e.deltaY > 0) {
+          this.downScaling();
+        } else {
+          this.upScaling();
+        }
+      }
+    })
   }
 
   displayCurrentData() {
@@ -202,6 +234,8 @@ export class DisplayComponent implements OnInit {
       });
       this.storage.current().openedAt = new Date().toISOString();
       this.stage?.setSize({width: image.width, height: image.height});
+      this.imageW = image.width;
+      this.imageH = image.height;
       this.imageLayer?.destroyChildren();
       this.imageLayer?.add(dataImage);
     }
@@ -221,21 +255,25 @@ export class DisplayComponent implements OnInit {
       strokeWidth: 2,
       strokeScaleEnabled: false
     });
-    rect.on("mouseenter mousemove", (e) => {
+    rect.on("mouseenter mousemove", () => {
       this.showTooltip(label);
     });
-    rect.on("mouseleave", (e) => {
+    rect.on("mouseleave", () => {
       this.hideTooltip();
     });
-    rect.on("dragstart", (e) => {
-      this.changes = true;
-    });
     rect.on("transform", (e) => {
-      this.changes = true;
       this.labels.get(e.target as Konva.Rect).text.setAttrs({
         scaleX: 1,
         scaleY: 1
       });
+    });
+    rect.on("transformend dragend", (e) => {
+      this.changes = true;
+      let target = e.currentTarget as Konva.Rect;
+      let obj = this.buildObject(target, this.labels.get(target).label);
+      this.storage.current().layout.object = this.storage.current().layout.object.filter(o => JSON.stringify(o.bndbox) !== JSON.stringify(this.labels.get(target).bndbox));
+      this.storage.current().layout.object.push(obj);
+      this.labels.set(target, {label: obj.name, text: text, bndbox: obj.bndbox})
     });
     rect.on("visibleChange", (e) => {
       if (!e.currentTarget.isVisible()) {
@@ -254,7 +292,7 @@ export class DisplayComponent implements OnInit {
     });
 
     this.layoutLayer?.add(rect, text);
-    this.labels.set(rect, {label: label, text: text});
+    this.labels.set(rect, {label: label, text: text, bndbox: bndbox});
     this.allLabels.add(label);
   }
 
@@ -264,8 +302,8 @@ export class DisplayComponent implements OnInit {
       bndbox: {
         xmin: Math.round(rect.x()),
         ymin: Math.round(rect.y()),
-        xmax: Math.round(rect.x() + rect.width()),
-        ymax: Math.round(rect.y() + rect.height())
+        xmax: Math.round(rect.x()) + Math.round(rect.width() * rect.scale()?.x!),
+        ymax: Math.round(rect.y()) + Math.round(rect.height() * rect.scale()?.y!)
       } as Bndbox,
       difficult: 0,
       pose: "Unspecified",
@@ -285,24 +323,28 @@ export class DisplayComponent implements OnInit {
   }
 
   prev() {
-    if (this.changes) {
-      this.storage.updateData(this.storage.current());
-    }
+    this.update();
     this.storage.prev(() => this.displayCurrentData());
   }
 
   next() {
-    if (this.changes) {
-      this.storage.updateData(this.storage.current());
-    }
+    this.update();
     this.storage.next(() => this.displayCurrentData());
   }
 
   goToData(dataName: string) {
+    this.update();
+    this.storage.goToData(dataName, () => this.displayCurrentData());
+  }
+
+  update() {
     if (this.changes) {
       this.storage.updateData(this.storage.current());
     }
-    this.storage.goToData(dataName, () => this.displayCurrentData());
+  }
+
+  saveProgress() {
+    localStorage.setItem(this.storage.datasetName, this.storage.cursor.toString());
   }
 
   selectLabel(rect: Konva.Rect) {
@@ -328,8 +370,8 @@ export class DisplayComponent implements OnInit {
 
     this.tooltip?.destroy();
     this.tooltip = new Konva.Label({
-      x: Number(pointerPosition?.x) + 5,
-      y: Number(pointerPosition?.y) + 5
+      x: Number(pointerPosition?.x) / this.stage?.scale()?.x! + 15 / this.stage?.scale()?.x!,
+      y: Number(pointerPosition?.y) / this.stage?.scale()?.y! - 10 / this.stage?.scale()?.y!
     });
     this.tooltip.add(new Konva.Tag({
       fill: "white",
@@ -338,7 +380,7 @@ export class DisplayComponent implements OnInit {
     }));
     let text = new Konva.Text({
       text: label,
-      fontSize: 20,
+      fontSize: 20 / this.stage?.scale()?.x!,
       fill: "black",
       padding: 3
     });
@@ -357,7 +399,37 @@ export class DisplayComponent implements OnInit {
     this.labelList?.deselectAll();
   }
 
-  openLabelDialog(labels: string[]) {
+  openLabelDialog() {
     return this.dialog.open(LabelSelectComponent, {data: this.allLabels});
+  }
+
+  upScaling() {
+    if (this.scale < 2) {
+      this.scale += this.scaleStep;
+      this.scaling();
+    }
+  }
+
+  valueScaling(value: number) {
+    let sc = value / 100;
+    if (sc >= 0.25 && sc <= 2) {
+      this.scale = sc;
+      this.scaling();
+    }
+  }
+
+  downScaling() {
+    if (this.scale > 0.25) {
+      this.scale -= this.scaleStep;
+      this.scaling();
+    }
+  }
+
+  scaling() {
+    this.stage?.scale({x: this.scale, y: this.scale});
+    this.stage?.setSize({
+      width: this.imageW * this.stage?.scale()?.x!,
+      height: this.imageH * this.stage?.scale()?.y!
+    });
   }
 }

@@ -41,7 +41,8 @@ export class DatasetStorageService {
       this.datasetService.getDatasetNames(datasetName)
         .subscribe(result => {
           this.names = result;
-          this.fillDatasetBuffer(0, callback);
+          let savedProgress = localStorage.getItem(this.datasetName);
+          this.fillDatasetBuffer(savedProgress ? Number.parseInt(savedProgress) : 0, callback);
         });
     }, timeout);
   }

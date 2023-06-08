@@ -57,7 +57,7 @@ export interface UserStatistic {
   userId: number;
   date: string;
   lastUpdateAt: string;
-  totalTimeWorked: string;
+  totalTimeWorked: number;
   filesChecked: number;
   objectsChanged: number;
 }

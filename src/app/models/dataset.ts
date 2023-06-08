@@ -9,5 +9,5 @@ export interface Dataset {
 export interface DatasetStatistics {
   userId: number;
   datasetName: string;
-  moderatingTime: string;
+  moderatingTime: number;
 }

@@ -53,7 +53,6 @@ export class AuthService {
 
     this.http.get<User>('/api/v2/auth', {headers: this.headers}).subscribe(response => {
       if (response) {
-        console.log(response);
         this.authenticated = response;
         localStorage.setItem("currentUser", JSON.stringify(response));
         localStorage.setItem("currentAuth", auth);
