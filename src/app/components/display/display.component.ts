@@ -261,7 +261,7 @@ export class DisplayComponent implements OnInit {
     rect.on("mouseleave", () => {
       this.hideTooltip();
     });
-    rect.on("dragstart", () => {
+    rect.on("dragstart", (e) => {
       this.changes = true;
     });
     rect.on("transform", (e) => {
@@ -271,8 +271,18 @@ export class DisplayComponent implements OnInit {
         scaleY: 1
       });
     });
-    rect.on("transformend", () => {
+    rect.on("transformend", (e) => {
       //TODO transform changes not saving
+      this.changes = true;
+      console.log(e);
+      let target = e.currentTarget as Konva.Rect;
+      console.log(target);
+      let obj = this.buildObject(target, this.labels.get(target).label);
+      this.storage.current().layout.object = this.storage.current().layout.object.filter(o => JSON.stringify(o.bndbox) !== JSON.stringify(this.labels.get(target).bndbox));
+      this.storage.current().layout.object.push(obj);
+      this.labels.set(target, {label: obj.name, text: text, bndbox: obj.bndbox})
+      console.log(obj);
+      console.log(this.storage.current());
     });
     rect.on("visibleChange", (e) => {
       if (!e.currentTarget.isVisible()) {
@@ -301,8 +311,8 @@ export class DisplayComponent implements OnInit {
       bndbox: {
         xmin: Math.round(rect.x()),
         ymin: Math.round(rect.y()),
-        xmax: Math.round(rect.x() + rect.width()),
-        ymax: Math.round(rect.y() + rect.height())
+        xmax: Math.round(rect.x()) + Math.round(rect.width() * rect.scale()?.x!),
+        ymax: Math.round(rect.y()) + Math.round(rect.height() * rect.scale()?.y!)
       } as Bndbox,
       difficult: 0,
       pose: "Unspecified",
