@@ -261,28 +261,19 @@ export class DisplayComponent implements OnInit {
     rect.on("mouseleave", () => {
       this.hideTooltip();
     });
-    rect.on("dragstart", (e) => {
-      this.changes = true;
-    });
     rect.on("transform", (e) => {
-      this.changes = true;
       this.labels.get(e.target as Konva.Rect).text.setAttrs({
         scaleX: 1,
         scaleY: 1
       });
     });
-    rect.on("transformend", (e) => {
-      //TODO transform changes not saving
+    rect.on("transformend dragend", (e) => {
       this.changes = true;
-      console.log(e);
       let target = e.currentTarget as Konva.Rect;
-      console.log(target);
       let obj = this.buildObject(target, this.labels.get(target).label);
       this.storage.current().layout.object = this.storage.current().layout.object.filter(o => JSON.stringify(o.bndbox) !== JSON.stringify(this.labels.get(target).bndbox));
       this.storage.current().layout.object.push(obj);
       this.labels.set(target, {label: obj.name, text: text, bndbox: obj.bndbox})
-      console.log(obj);
-      console.log(this.storage.current());
     });
     rect.on("visibleChange", (e) => {
       if (!e.currentTarget.isVisible()) {
